@@ -415,7 +415,7 @@ var RBACSummary = ({ role, featureIds }) => {
 };
 
 // src/components/RBACRoleFeatureManager.tsx
-var import_react8 = require("react");
+var import_react9 = require("react");
 var import_react_redux4 = require("react-redux");
 var import_core9 = require("@mantine/core");
 
@@ -485,6 +485,37 @@ var useFetchAllFeatures = () => {
   }, [endpoints, requestHeaders]);
 };
 
+// src/hooks/useFetchAllCategories.ts
+var import_react8 = require("react");
+var useFetchAllCategories = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const [categories, setCategories] = (0, import_react8.useState)([]);
+  const [loading, setLoading] = (0, import_react8.useState)(false);
+  const [error, setError] = (0, import_react8.useState)(null);
+  (0, import_react8.useEffect)(() => {
+    var _a;
+    const url = (_a = endpoints.getAllCategories) == null ? void 0 : _a.call(endpoints);
+    if (!url) return;
+    const fetchCategories = () => __async(void 0, null, function* () {
+      setLoading(true);
+      try {
+        const res = yield fetch(url, {
+          headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
+        });
+        const data = yield res.json();
+        setCategories(data.categories || []);
+      } catch (err) {
+        setError(err.message);
+        console.error("Error fetching categories:", err);
+      } finally {
+        setLoading(false);
+      }
+    });
+    fetchCategories();
+  }, [endpoints, requestHeaders]);
+  return { categories, loading, error };
+};
+
 // src/components/RoleSidebar.tsx
 var import_core6 = require("@mantine/core");
 var import_jsx_runtime7 = require("react/jsx-runtime");
@@ -549,11 +580,11 @@ var FeatureToggleTable = ({
 
 // src/components/RBACRoleFeatureManager.tsx
 var import_jsx_runtime10 = require("react/jsx-runtime");
-var DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
 var RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
-  const [selectedRole, setSelectedRole] = (0, import_react8.useState)("");
-  const [selectedCategory, setSelectedCategory] = (0, import_react8.useState)("dashboard");
+  const [selectedRole, setSelectedRole] = (0, import_react9.useState)("");
+  const [selectedCategory, setSelectedCategory] = (0, import_react9.useState)("dashboard");
+  const { categories } = useFetchAllCategories();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
   useFetchAllFeatures();
@@ -590,7 +621,7 @@ var RBACRoleFeatureManager = () => {
       /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
         FeatureCategoryTabs,
         {
-          categories: DUMMY_CATEGORIES,
+          categories,
           selected: selectedCategory,
           onSelect: setSelectedCategory
         }

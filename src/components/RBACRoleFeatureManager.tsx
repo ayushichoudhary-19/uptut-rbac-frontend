@@ -10,19 +10,19 @@ import { useFetchFeaturesByCategory } from "../hooks/useFetchFeaturesByCategory"
 import { useAddFeaturesToRole } from "../hooks/useAddFeaturesToRole";
 import { useFetchAllFeatures } from "../hooks/useFetchAllFeatures";
 import { useFetchFeaturesByRole } from "../hooks/useFetchFeaturesByRole";
-
+import { useFetchAllCategories } from "../hooks/useFetchAllCategories";
 import { RoleSidebar } from "./RoleSidebar";
 import { FeatureCategoryTabs } from "./FeatureCategoryTabs";
 import { FeatureToggleTable } from "./FeatureToggleTable";
 import { setFeatures } from "../store/featureSlice";
 
-const DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
+
 
 export const RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("dashboard");
-
+  const { categories } = useFetchAllCategories();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
   useFetchAllFeatures();
@@ -60,7 +60,7 @@ export const RBACRoleFeatureManager = () => {
       />
       <Stack className="flex-1">
         <FeatureCategoryTabs
-          categories={DUMMY_CATEGORIES}
+          categories={categories}
           selected={selectedCategory}
           onSelect={setSelectedCategory}
         />
