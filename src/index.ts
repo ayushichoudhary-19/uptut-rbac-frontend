@@ -1,5 +1,5 @@
 // HOOKS
-export * from "./hooks/useFetchPermissions";
+export * from "./hooks/useFetchFeaturesByRole";
 export * from "./hooks/useFeatureAccess";
 export * from "./hooks/useAddRole";
 export * from "./hooks/useFetchRoles";
@@ -25,4 +25,5 @@ export type { RBACConfig } from "./types/RBACConfig";
 
 // REDUX
 export * from "./store/featureSlice";
+export * from "./store/allFeaturesSlice";
 export { default as featureReducer } from "./store/featureSlice";

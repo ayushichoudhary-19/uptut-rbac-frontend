@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface FeatureState {
+export interface FeatureState {
   featureIds: string[];
 }
 

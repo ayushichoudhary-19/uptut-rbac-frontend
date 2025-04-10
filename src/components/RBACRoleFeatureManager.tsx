@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import {
-  FeatureCategoryTabs,
-} from "./FeatureCategoryTabs";
-import { FeatureToggleTable } from "./FeatureToggleTable";
-import { RoleSidebar } from "./RoleSidebar";
-
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 import { Paper, Stack } from "@mantine/core";
-
 import { useFetchRoles } from "../hooks/useFetchRoles";
 import { useFetchFeaturesByCategory } from "../hooks/useFetchFeaturesByCategory";
 import { useAddFeaturesToRole } from "../hooks/useAddFeaturesToRole";
+import { useFetchAllFeatures } from "../hooks/useFetchAllFeatures";
+import { RoleSidebar } from "./RoleSidebar";
+import { FeatureCategoryTabs } from "./FeatureCategoryTabs";
+import { FeatureToggleTable } from "./FeatureToggleTable";
 
 const DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
 
@@ -29,6 +28,10 @@ export const RBACRoleFeatureManager = ({
 
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
+
+  useFetchAllFeatures();
+
+  const allFeatures = useSelector((state: RootState) => state.allFeatures.allFeatures);
 
   const toggleFeature = (id: string) => {
     setSelectedFeatureIds((prev) =>

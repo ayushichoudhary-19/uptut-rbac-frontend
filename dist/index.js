@@ -60,14 +60,16 @@ __export(index_exports, {
   RBACSummary: () => RBACSummary,
   RoleManager: () => RoleManager,
   RoleSelector: () => RoleSelector,
+  allFeaturesSlice: () => allFeaturesSlice,
   featureReducer: () => featureSlice_default,
   featureSlice: () => featureSlice,
+  setAllFeatures: () => setAllFeatures,
   setFeatures: () => setFeatures,
   useAddFeature: () => useAddFeature,
   useAddFeaturesToRole: () => useAddFeaturesToRole,
   useAddRole: () => useAddRole,
   useFeatureAccess: () => useFeatureAccess,
-  useFetchPermissions: () => useFetchPermissions,
+  useFetchFeaturesByRole: () => useFetchFeaturesByRole,
   useFetchRoles: () => useFetchRoles,
   useRBACContext: () => useRBACContext,
   useRemoveFeaturesFromRole: () => useRemoveFeaturesFromRole,
@@ -76,7 +78,7 @@ __export(index_exports, {
 });
 module.exports = __toCommonJS(index_exports);
 
-// src/hooks/useFetchPermissions.ts
+// src/hooks/useFetchFeaturesByRole.ts
 var import_react2 = require("react");
 var import_react_redux = require("react-redux");
 
@@ -115,13 +117,13 @@ var useRBACContext = () => {
   return context;
 };
 
-// src/hooks/useFetchPermissions.ts
-var useFetchPermissions = (roleId) => {
+// src/hooks/useFetchFeaturesByRole.ts
+var useFetchFeaturesByRole = (roleId) => {
   const dispatch = (0, import_react_redux.useDispatch)();
   const { endpoints, requestHeaders } = useRBACContext();
   (0, import_react2.useEffect)(() => {
     if (!roleId) return;
-    const fetchFeatures = () => __async(void 0, null, function* () {
+    const fetchFeaturesByRole = () => __async(void 0, null, function* () {
       const res = yield fetch(endpoints.getFeatures(roleId), {
         headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
       });
@@ -129,7 +131,7 @@ var useFetchPermissions = (roleId) => {
       const featureIds = data.map((feature) => feature.id);
       dispatch(setFeatures(featureIds));
     });
-    fetchFeatures();
+    fetchFeaturesByRole();
   }, [roleId, endpoints, requestHeaders]);
 };
 
@@ -413,71 +415,8 @@ var RBACSummary = ({ role, featureIds }) => {
 };
 
 // src/components/RBACRoleFeatureManager.tsx
-var import_react7 = require("react");
-
-// src/components/FeatureCategoryTabs.tsx
-var import_core6 = require("@mantine/core");
-var import_jsx_runtime7 = require("react/jsx-runtime");
-var FeatureCategoryTabs = ({
-  categories,
-  selected,
-  onSelect
-}) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Tabs.Tab, { value: cat, children: cat }, cat)) }) });
-
-// src/components/FeatureToggleTable.tsx
-var import_core7 = require("@mantine/core");
-var import_jsx_runtime8 = require("react/jsx-runtime");
-var FeatureToggleTable = ({
-  features,
-  selectedIds,
-  onToggle,
-  onSave
-}) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(import_core7.Table, { striped: true, highlightOnHover: true, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("tr", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("th", { children: "Toggle" }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("th", { children: "Feature ID" }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("th", { children: "Feature Name" })
-      ] }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("tbody", { children: features.map((f) => /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("tr", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
-          import_core7.Checkbox,
-          {
-            checked: selectedIds.includes(f.id),
-            onChange: () => onToggle(f.id)
-          }
-        ) }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("td", { children: f.id }),
-        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("td", { children: f.name })
-      ] }, f.id)) })
-    ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_core7.Button, { mt: "md", onClick: onSave, children: "Save Permissions" })
-  ] });
-};
-
-// src/components/RoleSidebar.tsx
-var import_core8 = require("@mantine/core");
-var import_jsx_runtime9 = require("react/jsx-runtime");
-var RoleSidebar = ({
-  roles,
-  selected,
-  onSelect,
-  onAdd
-}) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_core8.Paper, { p: "md", withBorder: true, className: "w-64", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(import_core8.Stack, { children: [
-  roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
-    import_core8.Button,
-    {
-      variant: role === selected ? "filled" : "light",
-      onClick: () => onSelect(role),
-      children: role
-    },
-    role
-  )),
-  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_core8.Button, { variant: "outline", onClick: onAdd, children: "+ Add More" })
-] }) });
-
-// src/components/RBACRoleFeatureManager.tsx
+var import_react8 = require("react");
+var import_react_redux4 = require("react-redux");
 var import_core9 = require("@mantine/core");
 
 // src/hooks/useFetchFeaturesByCategory.ts
@@ -508,6 +447,106 @@ var useFetchFeaturesByCategory = (category) => {
   return { features, loading, error };
 };
 
+// src/hooks/useFetchAllFeatures.ts
+var import_react7 = require("react");
+var import_react_redux3 = require("react-redux");
+
+// src/store/allFeaturesSlice.ts
+var import_toolkit2 = require("@reduxjs/toolkit");
+var initialState2 = {
+  allFeatures: []
+};
+var allFeaturesSlice = (0, import_toolkit2.createSlice)({
+  name: "allFeatures",
+  initialState: initialState2,
+  reducers: {
+    setAllFeatures: (state, action) => {
+      state.allFeatures = action.payload;
+    }
+  }
+});
+var { setAllFeatures } = allFeaturesSlice.actions;
+var allFeaturesSlice_default = allFeaturesSlice.reducer;
+
+// src/hooks/useFetchAllFeatures.ts
+var useFetchAllFeatures = () => {
+  const dispatch = (0, import_react_redux3.useDispatch)();
+  const { endpoints, requestHeaders } = useRBACContext();
+  (0, import_react7.useEffect)(() => {
+    const fetchAll = () => __async(void 0, null, function* () {
+      if (!endpoints.getAllFeatures) return;
+      const res = yield fetch(endpoints.getAllFeatures(), {
+        headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
+      });
+      const data = yield res.json();
+      dispatch(setAllFeatures(data));
+    });
+    fetchAll();
+  }, [endpoints, requestHeaders]);
+};
+
+// src/components/RoleSidebar.tsx
+var import_core6 = require("@mantine/core");
+var import_jsx_runtime7 = require("react/jsx-runtime");
+var RoleSidebar = ({
+  roles,
+  selected,
+  onSelect,
+  onAdd
+}) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Paper, { p: "md", withBorder: true, className: "w-64", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsxs)(import_core6.Stack, { children: [
+  roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(
+    import_core6.Button,
+    {
+      variant: role === selected ? "filled" : "light",
+      onClick: () => onSelect(role),
+      children: role
+    },
+    role
+  )),
+  /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Button, { variant: "outline", onClick: onAdd, children: "+ Add More" })
+] }) });
+
+// src/components/FeatureCategoryTabs.tsx
+var import_core7 = require("@mantine/core");
+var import_jsx_runtime8 = require("react/jsx-runtime");
+var FeatureCategoryTabs = ({
+  categories,
+  selected,
+  onSelect
+}) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_core7.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_core7.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_core7.Tabs.Tab, { value: cat, children: cat }, cat)) }) });
+
+// src/components/FeatureToggleTable.tsx
+var import_core8 = require("@mantine/core");
+var import_jsx_runtime9 = require("react/jsx-runtime");
+var FeatureToggleTable = ({
+  features,
+  selectedIds,
+  onToggle,
+  onSave
+}) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(import_core8.Table, { striped: true, highlightOnHover: true, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { children: "Toggle" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { children: "Feature ID" }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("th", { children: "Feature Name" })
+      ] }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("tbody", { children: features.map((f) => /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+          import_core8.Checkbox,
+          {
+            checked: selectedIds.includes(f.id),
+            onChange: () => onToggle(f.id)
+          }
+        ) }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { children: f.id }),
+        /* @__PURE__ */ (0, import_jsx_runtime9.jsx)("td", { children: f.name })
+      ] }, f.id)) })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_core8.Button, { mt: "md", onClick: onSave, children: "Save Permissions" })
+  ] });
+};
+
 // src/components/RBACRoleFeatureManager.tsx
 var import_jsx_runtime10 = require("react/jsx-runtime");
 var DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
@@ -515,11 +554,13 @@ var RBACRoleFeatureManager = ({
   initialSelectedFeatureIds
 }) => {
   const { roles } = useFetchRoles();
-  const [selectedRole, setSelectedRole] = (0, import_react7.useState)("");
-  const [selectedCategory, setSelectedCategory] = (0, import_react7.useState)("dashboard");
-  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react7.useState)(initialSelectedFeatureIds);
+  const [selectedRole, setSelectedRole] = (0, import_react8.useState)("");
+  const [selectedCategory, setSelectedCategory] = (0, import_react8.useState)("dashboard");
+  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react8.useState)(initialSelectedFeatureIds);
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
+  useFetchAllFeatures();
+  const allFeatures = (0, import_react_redux4.useSelector)((state) => state.allFeatures.allFeatures);
   const toggleFeature = (id) => {
     setSelectedFeatureIds(
       (prev) => prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
@@ -575,14 +616,16 @@ var RBACRoleFeatureManager = ({
   RBACSummary,
   RoleManager,
   RoleSelector,
+  allFeaturesSlice,
   featureReducer,
   featureSlice,
+  setAllFeatures,
   setFeatures,
   useAddFeature,
   useAddFeaturesToRole,
   useAddRole,
   useFeatureAccess,
-  useFetchPermissions,
+  useFetchFeaturesByRole,
   useFetchRoles,
   useRBACContext,
   useRemoveFeaturesFromRole,

@@ -3,14 +3,14 @@ import { useDispatch } from "react-redux";
 import { setFeatures } from "../store/featureSlice";
 import { useRBACContext } from "../context/RBACContext";
 
-export const useFetchPermissions = (roleId: string) => {
+export const useFetchFeaturesByRole = (roleId: string) => {
   const dispatch = useDispatch();
   const { endpoints, requestHeaders } = useRBACContext();
 
   useEffect(() => {
     if (!roleId) return;
 
-    const fetchFeatures = async () => {
+    const fetchFeaturesByRole = async () => {
       const res = await fetch(endpoints.getFeatures(roleId), {
         headers: requestHeaders?.() || {},
       });
@@ -19,6 +19,6 @@ export const useFetchPermissions = (roleId: string) => {
       dispatch(setFeatures(featureIds));
     };
 
-    fetchFeatures();
+    fetchFeaturesByRole();
   }, [roleId, endpoints, requestHeaders]);
 };
