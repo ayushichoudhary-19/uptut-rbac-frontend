@@ -59,9 +59,12 @@ __export(index_exports, {
   featureReducer: () => featureSlice_default,
   featureSlice: () => featureSlice,
   setFeatures: () => setFeatures,
+  useAddFeature: () => useAddFeature,
+  useAddRole: () => useAddRole,
   useFeatureAccess: () => useFeatureAccess,
   useFetchPermissions: () => useFetchPermissions,
-  useRBACContext: () => useRBACContext
+  useRBACContext: () => useRBACContext,
+  useUploadFeatureJson: () => useUploadFeatureJson
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -132,6 +135,60 @@ var useFeatureAccess = (featureId) => {
   return featureIds.includes(featureId);
 };
 
+// src/hooks/useAddRole.ts
+var useAddRole = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const addRole = (role) => __async(void 0, null, function* () {
+    if (!endpoints.createRole) throw new Error("createRole endpoint not defined");
+    const res = yield fetch(endpoints.createRole, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role })
+    });
+    if (!res.ok) throw new Error("Failed to add role");
+    return yield res.json();
+  });
+  return { addRole };
+};
+
+// src/hooks/useAddFeature.ts
+var useAddFeature = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const addFeature = (role, feature) => __async(void 0, null, function* () {
+    if (!endpoints.createFeature) throw new Error("createFeature endpoint not defined");
+    const res = yield fetch(endpoints.createFeature, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role, feature })
+    });
+    if (!res.ok) throw new Error("Failed to add feature");
+    return yield res.json();
+  });
+  return { addFeature };
+};
+
+// src/hooks/useUploadFeatureJson.ts
+var useUploadFeatureJson = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const uploadFeatures = (features) => __async(void 0, null, function* () {
+    if (!endpoints.uploadFeatureJson) throw new Error("uploadFeatureJson endpoint not defined");
+    const res = yield fetch(endpoints.uploadFeatureJson, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ features })
+    });
+    if (!res.ok) throw new Error("Failed to upload feature list");
+    return yield res.json();
+  });
+  return { uploadFeatures };
+};
+
 // src/components/FeatureList.tsx
 var import_core = require("@mantine/core");
 var import_jsx_runtime2 = require("react/jsx-runtime");
@@ -158,26 +215,6 @@ var FeatureList = ({
 
 // src/components/RoleManager.tsx
 var import_react3 = require("react");
-
-// src/hooks/useAddRole.ts
-var useAddRole = () => {
-  const { endpoints, requestHeaders } = useRBACContext();
-  const addRole = (role) => __async(void 0, null, function* () {
-    if (!endpoints.createRole) throw new Error("createRole endpoint not defined");
-    const res = yield fetch(endpoints.createRole, {
-      method: "POST",
-      headers: __spreadValues({
-        "Content-Type": "application/json"
-      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
-      body: JSON.stringify({ role })
-    });
-    if (!res.ok) throw new Error("Failed to add role");
-    return yield res.json();
-  });
-  return { addRole };
-};
-
-// src/components/RoleManager.tsx
 var import_core2 = require("@mantine/core");
 var import_jsx_runtime3 = require("react/jsx-runtime");
 var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
@@ -215,7 +252,10 @@ var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
   featureReducer,
   featureSlice,
   setFeatures,
+  useAddFeature,
+  useAddRole,
   useFeatureAccess,
   useFetchPermissions,
-  useRBACContext
+  useRBACContext,
+  useUploadFeatureJson
 });

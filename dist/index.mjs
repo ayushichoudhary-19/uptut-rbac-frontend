@@ -102,6 +102,60 @@ var useFeatureAccess = (featureId) => {
   return featureIds.includes(featureId);
 };
 
+// src/hooks/useAddRole.ts
+var useAddRole = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const addRole = (role) => __async(void 0, null, function* () {
+    if (!endpoints.createRole) throw new Error("createRole endpoint not defined");
+    const res = yield fetch(endpoints.createRole, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role })
+    });
+    if (!res.ok) throw new Error("Failed to add role");
+    return yield res.json();
+  });
+  return { addRole };
+};
+
+// src/hooks/useAddFeature.ts
+var useAddFeature = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const addFeature = (role, feature) => __async(void 0, null, function* () {
+    if (!endpoints.createFeature) throw new Error("createFeature endpoint not defined");
+    const res = yield fetch(endpoints.createFeature, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role, feature })
+    });
+    if (!res.ok) throw new Error("Failed to add feature");
+    return yield res.json();
+  });
+  return { addFeature };
+};
+
+// src/hooks/useUploadFeatureJson.ts
+var useUploadFeatureJson = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const uploadFeatures = (features) => __async(void 0, null, function* () {
+    if (!endpoints.uploadFeatureJson) throw new Error("uploadFeatureJson endpoint not defined");
+    const res = yield fetch(endpoints.uploadFeatureJson, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ features })
+    });
+    if (!res.ok) throw new Error("Failed to upload feature list");
+    return yield res.json();
+  });
+  return { uploadFeatures };
+};
+
 // src/components/FeatureList.tsx
 import { Checkbox, Stack, Text, Paper } from "@mantine/core";
 import { jsx as jsx2, jsxs } from "react/jsx-runtime";
@@ -128,26 +182,6 @@ var FeatureList = ({
 
 // src/components/RoleManager.tsx
 import { useState } from "react";
-
-// src/hooks/useAddRole.ts
-var useAddRole = () => {
-  const { endpoints, requestHeaders } = useRBACContext();
-  const addRole = (role) => __async(void 0, null, function* () {
-    if (!endpoints.createRole) throw new Error("createRole endpoint not defined");
-    const res = yield fetch(endpoints.createRole, {
-      method: "POST",
-      headers: __spreadValues({
-        "Content-Type": "application/json"
-      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
-      body: JSON.stringify({ role })
-    });
-    if (!res.ok) throw new Error("Failed to add role");
-    return yield res.json();
-  });
-  return { addRole };
-};
-
-// src/components/RoleManager.tsx
 import { Button, Input, Text as Text2, Paper as Paper2, Stack as Stack2 } from "@mantine/core";
 import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
 var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
@@ -184,7 +218,10 @@ export {
   featureSlice_default as featureReducer,
   featureSlice,
   setFeatures,
+  useAddFeature,
+  useAddRole,
   useFeatureAccess,
   useFetchPermissions,
-  useRBACContext
+  useRBACContext,
+  useUploadFeatureJson
 };

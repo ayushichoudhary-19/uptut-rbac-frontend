@@ -9,6 +9,26 @@ declare const useFetchPermissions: (roleId: string) => void;
 
 declare const useFeatureAccess: (featureId: string) => boolean;
 
+declare const useAddRole: () => {
+    addRole: (role: string) => Promise<any>;
+};
+
+declare const useAddFeature: () => {
+    addFeature: (role: string, feature: {
+        id: string;
+        name: string;
+        category?: string;
+    }) => Promise<any>;
+};
+
+declare const useUploadFeatureJson: () => {
+    uploadFeatures: (features: Array<{
+        id: string;
+        name: string;
+        category?: string;
+    }>) => Promise<any>;
+};
+
 interface RBACConfig {
     endpoints: {
         getFeatures: (roleId: string) => string;
@@ -52,4 +72,4 @@ interface RoleManagerProps {
 }
 declare const RoleManager: React.FC<RoleManagerProps>;
 
-export { FeatureList, type RBACConfig, RBACProvider, RoleManager, _default as featureReducer, featureSlice, setFeatures, useFeatureAccess, useFetchPermissions, useRBACContext };
+export { FeatureList, type RBACConfig, RBACProvider, RoleManager, _default as featureReducer, featureSlice, setFeatures, useAddFeature, useAddRole, useFeatureAccess, useFetchPermissions, useRBACContext, useUploadFeatureJson };
