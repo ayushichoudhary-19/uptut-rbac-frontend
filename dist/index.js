@@ -63,13 +63,13 @@ __export(index_exports, {
   featureSlice: () => featureSlice,
   setFeatures: () => setFeatures,
   useAddFeature: () => useAddFeature,
+  useAddFeaturesToRole: () => useAddFeaturesToRole,
   useAddRole: () => useAddRole,
-  useBulkAddFeatures: () => useBulkAddFeatures,
-  useBulkRemoveFeatures: () => useBulkRemoveFeatures,
   useFeatureAccess: () => useFeatureAccess,
   useFetchPermissions: () => useFetchPermissions,
   useFetchRoles: () => useFetchRoles,
   useRBACContext: () => useRBACContext,
+  useRemoveFeaturesFromRole: () => useRemoveFeaturesFromRole,
   useRemoveRole: () => useRemoveRole,
   useUploadFeatureJson: () => useUploadFeatureJson
 });
@@ -230,11 +230,11 @@ var useUploadFeatureJson = () => {
 };
 
 // src/hooks/useRemoveFeaturesFromRole.ts
-var useBulkRemoveFeatures = () => {
+var useRemoveFeaturesFromRole = () => {
   const { endpoints, requestHeaders } = useRBACContext();
-  const removeFeatures = (role, featureIds) => __async(void 0, null, function* () {
+  const removeFeaturesFromRole = (role, featureIds) => __async(void 0, null, function* () {
     if (!endpoints.removeFeaturesFromRole) {
-      throw new Error("bulkRemoveFeatures endpoint not defined");
+      throw new Error("removeFeaturesFromRole endpoint not defined");
     }
     const res = yield fetch(endpoints.removeFeaturesFromRole, {
       method: "DELETE",
@@ -246,7 +246,7 @@ var useBulkRemoveFeatures = () => {
     if (!res.ok) throw new Error("Failed to remove features");
     return yield res.json();
   });
-  return { removeFeatures };
+  return { removeFeaturesFromRole };
 };
 
 // src/hooks/useRemoveRole.ts
@@ -270,11 +270,11 @@ var useRemoveRole = () => {
 };
 
 // src/hooks/useAddFeaturesToRole.ts
-var useBulkAddFeatures = () => {
+var useAddFeaturesToRole = () => {
   const { endpoints, requestHeaders } = useRBACContext();
   const addFeaturesToRole = (role, featureIds) => __async(void 0, null, function* () {
     if (!endpoints.addFeaturesToRole) {
-      throw new Error("bulkAddFeatures endpoint not defined");
+      throw new Error("addFeaturesToRole endpoint not defined");
     }
     const res = yield fetch(endpoints.addFeaturesToRole, {
       method: "POST",
@@ -286,7 +286,7 @@ var useBulkAddFeatures = () => {
     if (!res.ok) throw new Error("Failed to add features");
     return yield res.json();
   });
-  return { addFeaturesToRole };
+  return { addFeatures: addFeaturesToRole };
 };
 
 // src/components/RoleSelector.tsx
@@ -422,13 +422,13 @@ var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
   featureSlice,
   setFeatures,
   useAddFeature,
+  useAddFeaturesToRole,
   useAddRole,
-  useBulkAddFeatures,
-  useBulkRemoveFeatures,
   useFeatureAccess,
   useFetchPermissions,
   useFetchRoles,
   useRBACContext,
+  useRemoveFeaturesFromRole,
   useRemoveRole,
   useUploadFeatureJson
 });

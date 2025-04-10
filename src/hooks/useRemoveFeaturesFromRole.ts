@@ -1,11 +1,11 @@
 import { useRBACContext } from "../context/RBACContext";
 
-export const useBulkRemoveFeatures = () => {
+export const useRemoveFeaturesFromRole = () => {
   const { endpoints, requestHeaders } = useRBACContext();
 
-  const removeFeatures = async (role: string, featureIds: string[]) => {
+  const removeFeaturesFromRole = async (role: string, featureIds: string[]) => {
     if (!endpoints.removeFeaturesFromRole) {
-      throw new Error("bulkRemoveFeatures endpoint not defined");
+      throw new Error("removeFeaturesFromRole endpoint not defined");
     }
 
     const res = await fetch(endpoints.removeFeaturesFromRole, {
@@ -21,5 +21,5 @@ export const useBulkRemoveFeatures = () => {
     return await res.json();
   };
 
-  return { removeFeatures };
+  return { removeFeaturesFromRole };
 };

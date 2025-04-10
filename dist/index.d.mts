@@ -35,16 +35,16 @@ declare const useUploadFeatureJson: () => {
     }>) => Promise<any>;
 };
 
-declare const useBulkRemoveFeatures: () => {
-    removeFeatures: (role: string, featureIds: string[]) => Promise<any>;
+declare const useRemoveFeaturesFromRole: () => {
+    removeFeaturesFromRole: (role: string, featureIds: string[]) => Promise<any>;
 };
 
 declare const useRemoveRole: () => {
     removeRole: (role: string) => Promise<any>;
 };
 
-declare const useBulkAddFeatures: () => {
-    addFeaturesToRole: (role: string, featureIds: string[]) => Promise<any>;
+declare const useAddFeaturesToRole: () => {
+    addFeatures: (role: string, featureIds: string[]) => Promise<any>;
 };
 
 interface RoleSelectorProps {
@@ -113,4 +113,4 @@ interface RoleManagerProps {
 }
 declare const RoleManager: React$1.FC<RoleManagerProps>;
 
-export { FeatureList, FeatureUploader, type RBACConfig, RBACProvider, RBACSummary, RoleManager, RoleSelector, _default as featureReducer, featureSlice, setFeatures, useAddFeature, useAddRole, useBulkAddFeatures, useBulkRemoveFeatures, useFeatureAccess, useFetchPermissions, useFetchRoles, useRBACContext, useRemoveRole, useUploadFeatureJson };
+export { FeatureList, FeatureUploader, type RBACConfig, RBACProvider, RBACSummary, RoleManager, RoleSelector, _default as featureReducer, featureSlice, setFeatures, useAddFeature, useAddFeaturesToRole, useAddRole, useFeatureAccess, useFetchPermissions, useFetchRoles, useRBACContext, useRemoveFeaturesFromRole, useRemoveRole, useUploadFeatureJson };

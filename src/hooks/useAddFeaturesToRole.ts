@@ -1,11 +1,11 @@
 import { useRBACContext } from "../context/RBACContext";
 
-export const useBulkAddFeatures = () => {
+export const useAddFeaturesToRole = () => {
   const { endpoints, requestHeaders } = useRBACContext();
 
   const addFeaturesToRole = async (role: string, featureIds: string[]) => {
     if (!endpoints.addFeaturesToRole) {
-      throw new Error("bulkAddFeatures endpoint not defined");
+      throw new Error("addFeaturesToRole endpoint not defined");
     }
 
     const res = await fetch(endpoints.addFeaturesToRole, {
@@ -21,5 +21,5 @@ export const useBulkAddFeatures = () => {
     return await res.json();
   };
 
-  return { addFeaturesToRole };
+  return { addFeatures: addFeaturesToRole };
 };
