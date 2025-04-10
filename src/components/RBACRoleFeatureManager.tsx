@@ -21,6 +21,10 @@ export const RBACRoleFeatureManager = () => {
 
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
 
+  // Add these console logs
+  console.log("Selected Category:", selectedCategory);
+  console.log("Category Features:", categoryFeatures);
+
   const { features:roleFeatures } = useFetchFeaturesByRole(selectedRole);
   const roleFeatureIds = roleFeatures.map((f: any) => f.id);
 

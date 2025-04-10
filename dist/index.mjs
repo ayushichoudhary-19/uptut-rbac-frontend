@@ -240,45 +240,13 @@ var useAddFeaturesToRole = () => {
   return { addFeatures: addFeaturesToRole };
 };
 
-// src/components/RoleManager.tsx
-import { useState as useState3 } from "react";
-import { Button, Input, Text, Paper, Stack } from "@mantine/core";
-import { jsx as jsx2, jsxs } from "react/jsx-runtime";
-var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
-  const [newRole, setNewRole] = useState3("");
-  const { addRole } = useAddRole();
-  const handleAdd = () => __async(void 0, null, function* () {
-    if (!newRole) return;
-    try {
-      yield addRole(newRole);
-      onAdd(newRole);
-      setNewRole("");
-    } catch (e) {
-      console.error(e);
-    }
-  });
-  return /* @__PURE__ */ jsx2(Paper, { shadow: "sm", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ jsxs(Stack, { children: [
-    /* @__PURE__ */ jsx2(
-      Input,
-      {
-        value: newRole,
-        onChange: (e) => setNewRole(e.currentTarget.value),
-        placeholder: "Enter new role"
-      }
-    ),
-    /* @__PURE__ */ jsx2(Button, { color: primaryColor, onClick: handleAdd, children: "Add Role" }),
-    /* @__PURE__ */ jsx2(Text, { fw: 600, children: "Existing Roles:" }),
-    roles.map((role) => /* @__PURE__ */ jsx2(Text, { size: "sm", c: "dimmed", children: role }, role))
-  ] }) });
-};
-
 // src/components/FeatureUploader.tsx
-import { useState as useState4 } from "react";
+import { useState as useState3 } from "react";
 import { Dropzone } from "@mantine/dropzone";
-import { Text as Text2, Group } from "@mantine/core";
-import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Text, Group } from "@mantine/core";
+import { jsx as jsx2, jsxs } from "react/jsx-runtime";
 var FeatureUploader = ({ onUpload }) => {
-  const [error, setError] = useState4(null);
+  const [error, setError] = useState3(null);
   const handleDrop = (files) => __async(void 0, null, function* () {
     const file = files[0];
     if (!file) return;
@@ -295,37 +263,37 @@ var FeatureUploader = ({ onUpload }) => {
       setError("Failed to parse JSON file");
     }
   });
-  return /* @__PURE__ */ jsxs2("div", { className: "space-y-3", children: [
-    /* @__PURE__ */ jsx3(Dropzone, { onDrop: handleDrop, children: /* @__PURE__ */ jsx3(Group, { justify: "center", mih: 100, children: /* @__PURE__ */ jsx3(Text2, { size: "sm", children: "Drop or click to upload feature JSON" }) }) }),
-    error && /* @__PURE__ */ jsx3(Text2, { c: "red", children: error })
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+    /* @__PURE__ */ jsx2(Dropzone, { onDrop: handleDrop, children: /* @__PURE__ */ jsx2(Group, { justify: "center", mih: 100, children: /* @__PURE__ */ jsx2(Text, { size: "sm", children: "Drop or click to upload feature JSON" }) }) }),
+    error && /* @__PURE__ */ jsx2(Text, { c: "red", children: error })
   ] });
 };
 
 // src/components/RBACSummary.tsx
-import { Card, Text as Text3, Stack as Stack2, Badge } from "@mantine/core";
-import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
+import { Card, Text as Text2, Stack, Badge } from "@mantine/core";
+import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
 var RBACSummary = ({ role, featureIds }) => {
-  return /* @__PURE__ */ jsx4(Card, { shadow: "sm", radius: "md", withBorder: true, p: "lg", children: /* @__PURE__ */ jsxs3(Stack2, { children: [
-    /* @__PURE__ */ jsxs3(Text3, { fw: 700, size: "lg", children: [
+  return /* @__PURE__ */ jsx3(Card, { shadow: "sm", radius: "md", withBorder: true, p: "lg", children: /* @__PURE__ */ jsxs2(Stack, { children: [
+    /* @__PURE__ */ jsxs2(Text2, { fw: 700, size: "lg", children: [
       "Role: ",
       role
     ] }),
-    /* @__PURE__ */ jsx4(Text3, { fw: 500, children: "Assigned Features:" }),
-    /* @__PURE__ */ jsx4(Stack2, { gap: 4, children: featureIds.length > 0 ? featureIds.map((id) => /* @__PURE__ */ jsx4(Badge, { children: id }, id)) : /* @__PURE__ */ jsx4(Text3, { size: "sm", c: "dimmed", children: "No features assigned" }) })
+    /* @__PURE__ */ jsx3(Text2, { fw: 500, children: "Assigned Features:" }),
+    /* @__PURE__ */ jsx3(Stack, { gap: 4, children: featureIds.length > 0 ? featureIds.map((id) => /* @__PURE__ */ jsx3(Badge, { children: id }, id)) : /* @__PURE__ */ jsx3(Text2, { size: "sm", c: "dimmed", children: "No features assigned" }) })
   ] }) });
 };
 
 // src/components/RBACRoleFeatureManager.tsx
-import { useState as useState7, useEffect as useEffect5 } from "react";
-import { Paper as Paper3, Stack as Stack4 } from "@mantine/core";
+import { useState as useState6, useEffect as useEffect5 } from "react";
+import { Paper as Paper2, Stack as Stack3 } from "@mantine/core";
 
 // src/hooks/useFetchFeaturesByCategory.ts
-import { useState as useState5, useEffect as useEffect3 } from "react";
+import { useState as useState4, useEffect as useEffect3 } from "react";
 var useFetchFeaturesByCategory = (category) => {
   const { endpoints, requestHeaders } = useRBACContext();
-  const [features, setFeatures2] = useState5([]);
-  const [loading, setLoading] = useState5(false);
-  const [error, setError] = useState5(null);
+  const [features, setFeatures2] = useState4([]);
+  const [loading, setLoading] = useState4(false);
+  const [error, setError] = useState4(null);
   useEffect3(() => {
     if (!category || !endpoints.getFeaturesByCategory) return;
     const loadFeatures = () => __async(void 0, null, function* () {
@@ -348,12 +316,12 @@ var useFetchFeaturesByCategory = (category) => {
 };
 
 // src/hooks/useFetchAllCategories.ts
-import { useState as useState6, useEffect as useEffect4 } from "react";
+import { useState as useState5, useEffect as useEffect4 } from "react";
 var useFetchAllCategories = () => {
   const { endpoints, requestHeaders } = useRBACContext();
-  const [categories, setCategories] = useState6([]);
-  const [loading, setLoading] = useState6(false);
-  const [error, setError] = useState6(null);
+  const [categories, setCategories] = useState5([]);
+  const [loading, setLoading] = useState5(false);
+  const [error, setError] = useState5(null);
   useEffect4(() => {
     var _a;
     const url = (_a = endpoints.getAllCategories) == null ? void 0 : _a.call(endpoints);
@@ -379,16 +347,16 @@ var useFetchAllCategories = () => {
 };
 
 // src/components/RoleSidebar.tsx
-import { Button as Button3, Stack as Stack3, Paper as Paper2 } from "@mantine/core";
-import { jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
+import { Button as Button2, Stack as Stack2, Paper } from "@mantine/core";
+import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
 var RoleSidebar = ({
   roles,
   selected,
   onSelect,
   onAdd
-}) => /* @__PURE__ */ jsx5(Paper2, { p: "md", withBorder: true, className: "w-64", children: /* @__PURE__ */ jsxs4(Stack3, { children: [
-  roles.map((role) => /* @__PURE__ */ jsx5(
-    Button3,
+}) => /* @__PURE__ */ jsx4(Paper, { p: "md", withBorder: true, className: "w-64", children: /* @__PURE__ */ jsxs3(Stack2, { children: [
+  roles.map((role) => /* @__PURE__ */ jsx4(
+    Button2,
     {
       variant: role === selected ? "filled" : "light",
       onClick: () => onSelect(role),
@@ -396,65 +364,68 @@ var RoleSidebar = ({
     },
     role
   )),
-  /* @__PURE__ */ jsx5(Button3, { variant: "outline", onClick: onAdd, children: "+ Add More" })
+  /* @__PURE__ */ jsx4(Button2, { variant: "outline", onClick: onAdd, children: "+ Add More" })
 ] }) });
 
 // src/components/FeatureCategoryTabs.tsx
 import { Tabs } from "@mantine/core";
-import { jsx as jsx6 } from "react/jsx-runtime";
+import { jsx as jsx5 } from "react/jsx-runtime";
 var FeatureCategoryTabs = ({
   categories,
   selected,
   onSelect
 }) => {
   console.log("Rendering categories:", categories);
-  return /* @__PURE__ */ jsx6(Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ jsx6(Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ jsx6(Tabs.Tab, { value: cat, children: cat }, cat)) }) });
+  return /* @__PURE__ */ jsx5(Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ jsx5(Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ jsx5(Tabs.Tab, { value: cat, children: cat }, cat)) }) });
 };
 
 // src/components/FeatureToggleTable.tsx
-import { Checkbox, Table, Button as Button4 } from "@mantine/core";
-import { jsx as jsx7, jsxs as jsxs5 } from "react/jsx-runtime";
+import { Checkbox, Table, Button as Button3 } from "@mantine/core";
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
 var FeatureToggleTable = ({
   features,
   selectedIds,
   onToggle,
   onSave
 }) => {
-  return /* @__PURE__ */ jsxs5("div", { children: [
-    /* @__PURE__ */ jsxs5(Table, { striped: true, highlightOnHover: true, children: [
-      /* @__PURE__ */ jsx7("thead", { children: /* @__PURE__ */ jsxs5("tr", { children: [
-        /* @__PURE__ */ jsx7("th", { children: "Toggle" }),
-        /* @__PURE__ */ jsx7("th", { children: "Feature ID" }),
-        /* @__PURE__ */ jsx7("th", { children: "Feature Name" })
+  console.log("Features received in table:", features);
+  return /* @__PURE__ */ jsxs4("div", { children: [
+    /* @__PURE__ */ jsxs4(Table, { striped: true, highlightOnHover: true, children: [
+      /* @__PURE__ */ jsx6("thead", { children: /* @__PURE__ */ jsxs4("tr", { children: [
+        /* @__PURE__ */ jsx6("th", { children: "Toggle" }),
+        /* @__PURE__ */ jsx6("th", { children: "Feature ID" }),
+        /* @__PURE__ */ jsx6("th", { children: "Feature Name" })
       ] }) }),
-      /* @__PURE__ */ jsx7("tbody", { children: features.map((f) => /* @__PURE__ */ jsxs5("tr", { children: [
-        /* @__PURE__ */ jsx7("td", { children: /* @__PURE__ */ jsx7(
+      /* @__PURE__ */ jsx6("tbody", { children: features.map((f) => /* @__PURE__ */ jsxs4("tr", { children: [
+        /* @__PURE__ */ jsx6("td", { children: /* @__PURE__ */ jsx6(
           Checkbox,
           {
             checked: selectedIds.includes(f.id),
             onChange: () => onToggle(f.id)
           }
         ) }),
-        /* @__PURE__ */ jsx7("td", { children: f.id }),
-        /* @__PURE__ */ jsx7("td", { children: f.name })
+        /* @__PURE__ */ jsx6("td", { children: f.id }),
+        /* @__PURE__ */ jsx6("td", { children: f.name })
       ] }, f.id)) })
     ] }),
-    /* @__PURE__ */ jsx7(Button4, { mt: "md", onClick: onSave, children: "Save Permissions" })
+    /* @__PURE__ */ jsx6(Button3, { mt: "md", onClick: onSave, children: "Save Permissions" })
   ] });
 };
 
 // src/components/RBACRoleFeatureManager.tsx
-import { jsx as jsx8, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx7, jsxs as jsxs5 } from "react/jsx-runtime";
 var RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
-  const [selectedRole, setSelectedRole] = useState7("");
-  const [selectedCategory, setSelectedCategory] = useState7("");
+  const [selectedRole, setSelectedRole] = useState6("");
+  const [selectedCategory, setSelectedCategory] = useState6("");
   const { categories } = useFetchAllCategories();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
+  console.log("Selected Category:", selectedCategory);
+  console.log("Category Features:", categoryFeatures);
   const { features: roleFeatures } = useFetchFeaturesByRole(selectedRole);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
   const { addFeatures } = useAddFeaturesToRole();
-  const [selectedFeatureIds, setSelectedFeatureIds] = useState7(roleFeatureIds);
+  const [selectedFeatureIds, setSelectedFeatureIds] = useState6(roleFeatureIds);
   const toggleFeature = (id) => {
     const updated = selectedFeatureIds.includes(id) ? selectedFeatureIds.filter((f) => f !== id) : [...selectedFeatureIds, id];
     setSelectedFeatureIds(updated);
@@ -473,8 +444,8 @@ var RBACRoleFeatureManager = () => {
       setSelectedCategory(categories[0]);
     }
   }, [categories, selectedCategory]);
-  return /* @__PURE__ */ jsxs6(Paper3, { className: "p-6 flex gap-6", withBorder: true, children: [
-    /* @__PURE__ */ jsx8(
+  return /* @__PURE__ */ jsxs5(Paper2, { className: "p-6 flex gap-6", withBorder: true, children: [
+    /* @__PURE__ */ jsx7(
       RoleSidebar,
       {
         roles,
@@ -484,8 +455,8 @@ var RBACRoleFeatureManager = () => {
         }
       }
     ),
-    /* @__PURE__ */ jsxs6(Stack4, { className: "flex-1", children: [
-      /* @__PURE__ */ jsx8(
+    /* @__PURE__ */ jsxs5(Stack3, { className: "flex-1", children: [
+      /* @__PURE__ */ jsx7(
         FeatureCategoryTabs,
         {
           categories,
@@ -493,7 +464,7 @@ var RBACRoleFeatureManager = () => {
           onSelect: setSelectedCategory
         }
       ),
-      /* @__PURE__ */ jsx8(
+      /* @__PURE__ */ jsx7(
         FeatureToggleTable,
         {
           features: categoryFeatures,
@@ -544,7 +515,6 @@ export {
   RBACProvider,
   RBACRoleFeatureManager,
   RBACSummary,
-  RoleManager,
   allFeaturesSlice,
   featureSlice_default as featureReducer,
   featureSlice,

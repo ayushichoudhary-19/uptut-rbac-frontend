@@ -51,13 +51,6 @@ declare const useAddFeaturesToRole: () => {
     addFeatures: (role: string, featureIds: string[]) => Promise<any>;
 };
 
-interface RoleManagerProps {
-    roles: string[];
-    onAdd: (role: string) => void;
-    primaryColor?: string;
-}
-declare const RoleManager: React$1.FC<RoleManagerProps>;
-
 interface FeatureUploaderProps {
     onUpload: (featureIds: string[]) => void;
 }
@@ -119,4 +112,4 @@ declare const setAllFeatures: _reduxjs_toolkit.ActionCreatorWithOptionalPayload<
     category?: string;
 }[], "allFeatures/setAllFeatures">;
 
-export { type AllFeaturesState, type FeatureState, FeatureUploader, type RBACConfig, RBACProvider, RBACRoleFeatureManager, RBACSummary, RoleManager, allFeaturesSlice, _default as featureReducer, featureSlice, setAllFeatures, setFeatures, useAddFeature, useAddFeaturesToRole, useAddRole, useFeatureAccess, useFetchFeaturesByRole, useFetchRoles, useRBACContext, useRemoveFeaturesFromRole, useRemoveRole, useUploadFeatureJson };
+export { type AllFeaturesState, type FeatureState, FeatureUploader, type RBACConfig, RBACProvider, RBACRoleFeatureManager, RBACSummary, allFeaturesSlice, _default as featureReducer, featureSlice, setAllFeatures, setFeatures, useAddFeature, useAddFeaturesToRole, useAddRole, useFeatureAccess, useFetchFeaturesByRole, useFetchRoles, useRBACContext, useRemoveFeaturesFromRole, useRemoveRole, useUploadFeatureJson };

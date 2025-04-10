@@ -11,6 +11,9 @@ export const FeatureToggleTable = ({
   onToggle: (id: string) => void;
   onSave: () => void;
 }) => {
+  // Add this console log
+  console.log("Features received in table:", features);
+
   return (
     <div>
       <Table striped highlightOnHover>

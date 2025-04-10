@@ -10,7 +10,6 @@ export * from "./hooks/useRemoveRole";
 export * from "./hooks/useAddFeaturesToRole";
 
 // UI COMPONENTS
-export * from "./components/RoleManager";
 export * from "./components/FeatureUploader";
 export * from "./components/RBACSummary";
 export * from "./components/RBACRoleFeatureManager";
