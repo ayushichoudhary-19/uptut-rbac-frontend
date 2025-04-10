@@ -1,42 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { Paper, Stack } from "@mantine/core";
+
 import { useFetchRoles } from "../hooks/useFetchRoles";
 import { useFetchFeaturesByCategory } from "../hooks/useFetchFeaturesByCategory";
 import { useAddFeaturesToRole } from "../hooks/useAddFeaturesToRole";
 import { useFetchAllFeatures } from "../hooks/useFetchAllFeatures";
+import { useFetchFeaturesByRole } from "../hooks/useFetchFeaturesByRole";
+
 import { RoleSidebar } from "./RoleSidebar";
 import { FeatureCategoryTabs } from "./FeatureCategoryTabs";
 import { FeatureToggleTable } from "./FeatureToggleTable";
+import { setFeatures } from "../store/featureSlice";
 
 const DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
 
-interface RBACRoleFeatureManagerProps {
-  initialSelectedFeatureIds: string[];
-}
-
-export const RBACRoleFeatureManager = ({
-  initialSelectedFeatureIds,
-}: RBACRoleFeatureManagerProps) => {
+export const RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("dashboard");
-  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>(initialSelectedFeatureIds);
 
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
-
   useFetchAllFeatures();
+  useFetchFeaturesByRole(selectedRole);
+  const dispatch = useDispatch();
 
-  const allFeatures = useSelector((state: RootState) => state.allFeatures.allFeatures);
+  const selectedFeatureIds = useSelector(
+    (state: RootState) => state.features.featureIds
+  );
 
   const toggleFeature = (id: string) => {
-    setSelectedFeatureIds((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    );
+    const updated = selectedFeatureIds.includes(id)
+      ? selectedFeatureIds.filter((f) => f !== id)
+      : [...selectedFeatureIds, id];
+      dispatch(setFeatures(updated));
   };
 
   const handleSave = async () => {

@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Stack, Paper } from "@mantine/core";
 
 export const RoleSidebar = ({
