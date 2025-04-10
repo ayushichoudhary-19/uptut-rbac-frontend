@@ -9,14 +9,21 @@ declare const useFetchPermissions: (roleId: string) => void;
 
 declare const useFeatureAccess: (featureId: string) => boolean;
 
-interface RBACContextType {
-    getFeatureUrl: (roleId: string) => string;
+interface RBACConfig {
+    endpoints: {
+        getFeatures: (roleId: string) => string;
+        createRole?: string;
+        createFeature?: string;
+        uploadFeatureJson?: string;
+    };
+    requestHeaders?: () => HeadersInit;
 }
-declare const RBACProvider: ({ children, getFeatureUrl, }: {
+
+declare const RBACProvider: ({ children, config, }: {
     children: React.ReactNode;
-    getFeatureUrl: (roleId: string) => string;
+    config: RBACConfig;
 }) => react_jsx_runtime.JSX.Element;
-declare const useRBACContext: () => RBACContextType;
+declare const useRBACContext: () => RBACConfig;
 
 interface FeatureState {
     featureIds: string[];
@@ -43,4 +50,4 @@ interface RoleManagerProps {
 }
 declare const RoleManager: React.FC<RoleManagerProps>;
 
-export { FeatureList, RBACProvider, RoleManager, _default as featureReducer, featureSlice, setFeatures, useFeatureAccess, useFetchPermissions, useRBACContext };
+export { FeatureList, type RBACConfig, RBACProvider, RoleManager, _default as featureReducer, featureSlice, setFeatures, useFeatureAccess, useFetchPermissions, useRBACContext };

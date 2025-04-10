@@ -1,23 +1,16 @@
 import React, { createContext, useContext } from "react";
+import type { RBACConfig } from "../types/RBACConfig"
 
-interface RBACContextType {
-  getFeatureUrl: (roleId: string) => string;
-}
-
-const RBACContext = createContext<RBACContextType | undefined>(undefined);
+const RBACContext = createContext<RBACConfig | undefined>(undefined);
 
 export const RBACProvider = ({
   children,
-  getFeatureUrl,
+  config,
 }: {
   children: React.ReactNode;
-  getFeatureUrl: (roleId: string) => string;
+  config: RBACConfig;
 }) => {
-  return (
-    <RBACContext.Provider value={{ getFeatureUrl }}>
-      {children}
-    </RBACContext.Provider>
-  );
+  return <RBACContext.Provider value={config}>{children}</RBACContext.Provider>;
 };
 
 export const useRBACContext = () => {

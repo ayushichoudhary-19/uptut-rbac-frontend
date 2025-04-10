@@ -46,9 +46,9 @@ import { jsx } from "react/jsx-runtime";
 var RBACContext = createContext(void 0);
 var RBACProvider = ({
   children,
-  getFeatureUrl
+  config
 }) => {
-  return /* @__PURE__ */ jsx(RBACContext.Provider, { value: { getFeatureUrl }, children });
+  return /* @__PURE__ */ jsx(RBACContext.Provider, { value: config, children });
 };
 var useRBACContext = () => {
   const context = useContext(RBACContext);
@@ -61,17 +61,19 @@ var useRBACContext = () => {
 // src/hooks/useFetchPermissions.ts
 var useFetchPermissions = (roleId) => {
   const dispatch = useDispatch();
-  const { getFeatureUrl } = useRBACContext();
+  const { endpoints, requestHeaders } = useRBACContext();
   useEffect(() => {
     if (!roleId) return;
     const fetchFeatures = () => __async(void 0, null, function* () {
-      const res = yield fetch(getFeatureUrl(roleId));
+      const res = yield fetch(endpoints.getFeatures(roleId), {
+        headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
+      });
       const data = yield res.json();
       const featureIds = data.map((feature) => feature.id);
       dispatch(setFeatures(featureIds));
     });
     fetchFeatures();
-  }, [roleId, getFeatureUrl]);
+  }, [roleId, endpoints, requestHeaders]);
 };
 
 // src/hooks/useFeatureAccess.ts
