@@ -606,6 +606,11 @@ var RBACRoleFeatureManager = () => {
       alert("Failed to update permissions");
     }
   });
+  (0, import_react9.useEffect)(() => {
+    if (categories.length && !selectedCategory) {
+      setSelectedCategory(categories[0]);
+    }
+  }, [categories, selectedCategory]);
   return /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(import_core9.Paper, { className: "p-6 flex gap-6", withBorder: true, children: [
     /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
       RoleSidebar,

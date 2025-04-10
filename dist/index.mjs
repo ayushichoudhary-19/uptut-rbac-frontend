@@ -372,7 +372,7 @@ var RBACSummary = ({ role, featureIds }) => {
 };
 
 // src/components/RBACRoleFeatureManager.tsx
-import { useState as useState6 } from "react";
+import { useState as useState6, useEffect as useEffect6 } from "react";
 import { useDispatch as useDispatch3, useSelector as useSelector2 } from "react-redux";
 import { Paper as Paper4, Stack as Stack5 } from "@mantine/core";
 
@@ -563,6 +563,11 @@ var RBACRoleFeatureManager = () => {
       alert("Failed to update permissions");
     }
   });
+  useEffect6(() => {
+    if (categories.length && !selectedCategory) {
+      setSelectedCategory(categories[0]);
+    }
+  }, [categories, selectedCategory]);
   return /* @__PURE__ */ jsxs7(Paper4, { className: "p-6 flex gap-6", withBorder: true, children: [
     /* @__PURE__ */ jsx10(
       RoleSidebar,
