@@ -1,7 +1,21 @@
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -119,54 +133,79 @@ var useFeatureAccess = (featureId) => {
 };
 
 // src/components/FeatureList.tsx
+var import_core = require("@mantine/core");
 var import_jsx_runtime2 = require("react/jsx-runtime");
 var FeatureList = ({
   features,
   selected,
-  onToggle
+  onToggle,
+  primaryColor = "blue"
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "space-y-2", children: features.map((feature) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { className: "flex items-center gap-2", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-      "input",
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_core.Paper, { shadow: "xs", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_core.Stack, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_core.Text, { fw: 600, mb: "sm", children: "Select Features" }),
+    features.map((feature) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      import_core.Checkbox,
       {
-        type: "checkbox",
+        label: feature.name,
         checked: selected.includes(feature.id),
-        onChange: () => onToggle(feature.id)
-      }
-    ),
-    feature.name
-  ] }, feature.id)) });
+        onChange: () => onToggle(feature.id),
+        color: primaryColor
+      },
+      feature.id
+    ))
+  ] }) });
 };
 
 // src/components/RoleManager.tsx
 var import_react3 = require("react");
+
+// src/hooks/useAddRole.ts
+var useAddRole = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const addRole = (role) => __async(void 0, null, function* () {
+    if (!endpoints.createRole) throw new Error("createRole endpoint not defined");
+    const res = yield fetch(endpoints.createRole, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role })
+    });
+    if (!res.ok) throw new Error("Failed to add role");
+    return yield res.json();
+  });
+  return { addRole };
+};
+
+// src/components/RoleManager.tsx
+var import_core2 = require("@mantine/core");
 var import_jsx_runtime3 = require("react/jsx-runtime");
-var RoleManager = ({ roles, onAdd }) => {
+var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
   const [newRole, setNewRole] = (0, import_react3.useState)("");
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "space-y-4", children: [
+  const { addRole } = useAddRole();
+  const handleAdd = () => __async(void 0, null, function* () {
+    if (!newRole) return;
+    try {
+      yield addRole(newRole);
+      onAdd(newRole);
+      setNewRole("");
+    } catch (e) {
+      console.error(e);
+    }
+  });
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Paper, { shadow: "sm", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_core2.Stack, { children: [
     /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
-      "input",
+      import_core2.Input,
       {
-        type: "text",
         value: newRole,
-        onChange: (e) => setNewRole(e.target.value),
-        placeholder: "New role name",
-        className: "border p-2"
+        onChange: (e) => setNewRole(e.currentTarget.value),
+        placeholder: "Enter new role"
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
-      "button",
-      {
-        className: "bg-blue-500 text-white px-4 py-2 rounded",
-        onClick: () => {
-          onAdd(newRole);
-          setNewRole("");
-        },
-        children: "Add Role"
-      }
-    ),
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("ul", { className: "mt-4", children: roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("li", { children: role }, role)) })
-  ] });
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Button, { color: primaryColor, onClick: handleAdd, children: "Add Role" }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Text, { fw: 600, children: "Existing Roles:" }),
+    roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Text, { size: "sm", c: "dimmed", children: role }, role))
+  ] }) });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

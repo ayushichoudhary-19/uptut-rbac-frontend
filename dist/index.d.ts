@@ -41,12 +41,14 @@ interface FeatureListProps {
     }[];
     selected: string[];
     onToggle: (id: string) => void;
+    primaryColor?: string;
 }
 declare const FeatureList: React.FC<FeatureListProps>;
 
 interface RoleManagerProps {
     roles: string[];
     onAdd: (role: string) => void;
+    primaryColor?: string;
 }
 declare const RoleManager: React.FC<RoleManagerProps>;
 
