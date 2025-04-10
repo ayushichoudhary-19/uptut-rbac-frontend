@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRBACContext } from "../context/RBACContext";
 
 interface Role {
@@ -12,7 +12,7 @@ export const useFetchRoles = () => {
   const [error, setError] = useState('');
   const { endpoints, requestHeaders } = useRBACContext();
 
-  const fetchRoles = async () => {
+  const fetchRoles = useCallback(async () => {
     if (!endpoints.getRoles) {
       setError("getRoles endpoint not defined");
       return;
@@ -25,17 +25,22 @@ export const useFetchRoles = () => {
       });
       if (!res.ok) throw new Error("Failed to fetch roles");
       const data = await res.json();
-      setRoles(data.roles || []); // Expecting array of { id, name } objects
+      setRoles(data.roles || []);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [endpoints, requestHeaders]);
 
   useEffect(() => {
     fetchRoles();
-  }, [endpoints, requestHeaders]);
+  }, [fetchRoles]);
 
-  return { roles, loading, error, refetchRoles: fetchRoles };
+  return useMemo(() => ({ 
+    roles, 
+    loading, 
+    error, 
+    refetchRoles: fetchRoles 
+  }), [roles, loading, error, fetchRoles]);
 };

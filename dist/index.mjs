@@ -112,13 +112,13 @@ var useAddRole = () => {
 };
 
 // src/hooks/useFetchRoles.ts
-import { useEffect as useEffect2, useState as useState2 } from "react";
+import { useCallback, useEffect as useEffect2, useMemo, useState as useState2 } from "react";
 var useFetchRoles = () => {
   const [roles, setRoles] = useState2([]);
   const [loading, setLoading] = useState2(false);
   const [error, setError] = useState2("");
   const { endpoints, requestHeaders } = useRBACContext();
-  const fetchRoles = () => __async(void 0, null, function* () {
+  const fetchRoles = useCallback(() => __async(void 0, null, function* () {
     if (!endpoints.getRoles) {
       setError("getRoles endpoint not defined");
       return;
@@ -136,11 +136,16 @@ var useFetchRoles = () => {
     } finally {
       setLoading(false);
     }
-  });
+  }), [endpoints, requestHeaders]);
   useEffect2(() => {
     fetchRoles();
-  }, [endpoints, requestHeaders]);
-  return { roles, loading, error, refetchRoles: fetchRoles };
+  }, [fetchRoles]);
+  return useMemo(() => ({
+    roles,
+    loading,
+    error,
+    refetchRoles: fetchRoles
+  }), [roles, loading, error, fetchRoles]);
 };
 
 // src/hooks/useAddFeature.ts
@@ -283,38 +288,42 @@ var RBACSummary = ({ role, featureIds }) => {
 };
 
 // src/components/RBACRoleFeatureManager.tsx
-import { useState as useState7, useEffect as useEffect5 } from "react";
+import { useState as useState7, useEffect as useEffect5, useMemo as useMemo3, useCallback as useCallback3, memo as memo3 } from "react";
 import { useDispatch } from "react-redux";
 import { Paper as Paper3, Stack as Stack4 } from "@mantine/core";
 
 // src/hooks/useFetchFeaturesByCategory.ts
-import { useState as useState4, useEffect as useEffect3 } from "react";
+import { useState as useState4, useEffect as useEffect3, useCallback as useCallback2, useMemo as useMemo2 } from "react";
 var useFetchFeaturesByCategory = (category) => {
   const [features, setFeatures2] = useState4([]);
   const [loading, setLoading] = useState4(false);
   const [error, setError] = useState4(null);
   const { endpoints, requestHeaders } = useRBACContext();
-  useEffect3(() => {
+  const fetchFeatures = useCallback2(() => __async(void 0, null, function* () {
     if (!category) return;
-    const fetchFeatures = () => __async(void 0, null, function* () {
-      setLoading(true);
-      try {
-        const res = yield fetch(endpoints.getFeaturesByCategory(category), {
-          headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
-        });
-        const data = yield res.json();
-        setFeatures2(data || []);
-        console.log("Fetched features:", data);
-      } catch (err) {
-        setError(err.message);
-        console.error("Error fetching features:", err);
-      } finally {
-        setLoading(false);
-      }
-    });
-    fetchFeatures();
-  }, [category, endpoints, requestHeaders]);
-  return { features, loading, error };
+    setLoading(true);
+    try {
+      const res = yield fetch(endpoints.getFeaturesByCategory(category), {
+        headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
+      });
+      const data = yield res.json();
+      setFeatures2(data || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }), [category, endpoints, requestHeaders]);
+  useEffect3(() => {
+    if (category) {
+      fetchFeatures();
+    }
+  }, [category, fetchFeatures]);
+  return useMemo2(() => ({
+    features,
+    loading,
+    error
+  }), [features, loading, error]);
 };
 
 // src/hooks/useFetchAllCategories.ts
@@ -385,9 +394,10 @@ var FeatureCategoryTabs = memo(({
 FeatureCategoryTabs.displayName = "FeatureCategoryTabs";
 
 // src/components/FeatureToggleTable.tsx
+import { memo as memo2 } from "react";
 import { Checkbox, Table, Button as Button3 } from "@mantine/core";
 import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
-var FeatureToggleTable = ({
+var FeatureToggleTable = memo2(({
   features,
   selectedIds,
   onToggle,
@@ -396,23 +406,24 @@ var FeatureToggleTable = ({
   return /* @__PURE__ */ jsxs4("div", { children: [
     /* @__PURE__ */ jsxs4(Table, { striped: true, highlightOnHover: true, children: [
       /* @__PURE__ */ jsx6("thead", { children: /* @__PURE__ */ jsxs4("tr", { children: [
-        /* @__PURE__ */ jsx6("th", { children: "Toggle" }),
-        /* @__PURE__ */ jsx6("th", { children: "Feature" })
+        /* @__PURE__ */ jsx6("th", { children: "Select" }),
+        /* @__PURE__ */ jsx6("th", { children: "Feature Name" })
       ] }) }),
-      /* @__PURE__ */ jsx6("tbody", { children: features.map((f) => /* @__PURE__ */ jsxs4("tr", { children: [
+      /* @__PURE__ */ jsx6("tbody", { children: features.map((feature) => /* @__PURE__ */ jsxs4("tr", { children: [
         /* @__PURE__ */ jsx6("td", { children: /* @__PURE__ */ jsx6(
           Checkbox,
           {
-            checked: selectedIds.includes(f.id),
-            onChange: () => onToggle(f.id)
+            checked: selectedIds.includes(feature.id),
+            onChange: () => onToggle(feature.id)
           }
         ) }),
-        /* @__PURE__ */ jsx6("td", { children: f.name })
-      ] }, f.id)) })
+        /* @__PURE__ */ jsx6("td", { children: feature.name })
+      ] }, feature.id)) })
     ] }),
-    /* @__PURE__ */ jsx6(Button3, { mt: "md", onClick: onSave, children: "Save Permissions" })
+    /* @__PURE__ */ jsx6(Button3, { mt: "md", onClick: onSave, children: "Save Changes" })
   ] });
-};
+});
+FeatureToggleTable.displayName = "FeatureToggleTable";
 
 // src/store/featureSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
@@ -480,7 +491,7 @@ var RoleManagement = ({ onRoleCreate, onCancel }) => {
 
 // src/components/RBACRoleFeatureManager.tsx
 import { jsx as jsx8, jsxs as jsxs6 } from "react/jsx-runtime";
-var RBACRoleFeatureManager = () => {
+var RBACRoleFeatureManager = memo3(() => {
   const { roles, refetchRoles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState7("");
   const [selectedCategory, setSelectedCategory] = useState7("");
@@ -490,18 +501,24 @@ var RBACRoleFeatureManager = () => {
   const dispatch = useDispatch();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
+  const memoizedCategoryFeatures = useMemo3(() => categoryFeatures, [categoryFeatures]);
   const [selectedFeatureIds, setSelectedFeatureIds] = useState7([]);
   const [isCreatingRole, setIsCreatingRole] = useState7(false);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
+  const memoizedRoleFeatureIds = useMemo3(() => roleFeatures.map((f) => f.id), [roleFeatures]);
   useEffect5(() => {
-    setSelectedFeatureIds(roleFeatureIds);
-  }, [roleFeatureIds]);
-  const toggleFeature = (featureId) => {
-    setSelectedFeatureIds(
-      (prev) => prev.includes(featureId) ? prev.filter((id) => id !== featureId) : [...prev, featureId]
-    );
-  };
-  const handleSave = () => __async(void 0, null, function* () {
+    if (selectedRole) {
+      setSelectedFeatureIds(memoizedRoleFeatureIds);
+    }
+  }, [selectedRole, memoizedRoleFeatureIds]);
+  const toggleFeature = useCallback3((featureId) => {
+    setSelectedFeatureIds((prev) => {
+      const isSelected = prev.includes(featureId);
+      console.log("Toggling feature:", featureId, "Current state:", isSelected);
+      return isSelected ? prev.filter((id) => id !== featureId) : [...prev, featureId];
+    });
+  }, []);
+  const handleSave = useCallback3(() => __async(void 0, null, function* () {
     if (!selectedRole) return;
     try {
       yield addFeatures(selectedRole, selectedFeatureIds);
@@ -509,8 +526,8 @@ var RBACRoleFeatureManager = () => {
     } catch (error) {
       console.error("Failed to save features:", error);
     }
-  });
-  const handleCreateRole = (roleId, roleName) => __async(void 0, null, function* () {
+  }), [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
+  const handleCreateRole = useCallback3((roleId, roleName) => __async(void 0, null, function* () {
     try {
       yield addRole({ id: roleId, name: roleName });
       setIsCreatingRole(false);
@@ -519,7 +536,13 @@ var RBACRoleFeatureManager = () => {
     } catch (error) {
       console.error("Failed to create role:", error);
     }
-  });
+  }), [addRole, refetchRoles]);
+  const handleCategorySelect = useCallback3((category) => {
+    setSelectedCategory(category);
+  }, []);
+  const handleRoleSelect = useCallback3((role) => {
+    setSelectedRole(role);
+  }, []);
   if (isCreatingRole) {
     return /* @__PURE__ */ jsx8(
       RoleManagement,
@@ -535,7 +558,7 @@ var RBACRoleFeatureManager = () => {
       {
         roles,
         selected: selectedRole,
-        onSelect: setSelectedRole,
+        onSelect: handleRoleSelect,
         onAdd: () => setIsCreatingRole(true)
       }
     ),
@@ -545,13 +568,13 @@ var RBACRoleFeatureManager = () => {
         {
           categories,
           selected: selectedCategory,
-          onSelect: setSelectedCategory
+          onSelect: handleCategorySelect
         }
       ),
       /* @__PURE__ */ jsx8(
         FeatureToggleTable,
         {
-          features: categoryFeatures,
+          features: memoizedCategoryFeatures,
           selectedIds: selectedFeatureIds,
           onToggle: toggleFeature,
           onSave: handleSave
@@ -559,7 +582,8 @@ var RBACRoleFeatureManager = () => {
       )
     ] })
   ] });
-};
+});
+RBACRoleFeatureManager.displayName = "RBACRoleFeatureManager";
 
 // src/store/allFeaturesSlice.ts
 import { createSlice as createSlice2 } from "@reduxjs/toolkit";

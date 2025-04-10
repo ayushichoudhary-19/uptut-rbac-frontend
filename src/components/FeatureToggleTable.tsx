@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { Checkbox, Table, Button } from "@mantine/core";
 
-export const FeatureToggleTable = ({
+export const FeatureToggleTable = memo(({
   features,
   selectedIds,
   onToggle,
@@ -16,27 +17,29 @@ export const FeatureToggleTable = ({
       <Table striped highlightOnHover>
         <thead>
           <tr>
-            <th>Toggle</th>
-            <th>Feature</th>
+            <th>Select</th>
+            <th>Feature Name</th>
           </tr>
         </thead>
         <tbody>
-          {features.map((f) => (
-            <tr key={f.id}>
+          {features.map((feature) => (
+            <tr key={feature.id}>
               <td>
                 <Checkbox
-                  checked={selectedIds.includes(f.id)}
-                  onChange={() => onToggle(f.id)}
+                  checked={selectedIds.includes(feature.id)}
+                  onChange={() => onToggle(feature.id)}
                 />
               </td>
-              <td>{f.name}</td>
+              <td>{feature.name}</td>
             </tr>
           ))}
         </tbody>
       </Table>
       <Button mt="md" onClick={onSave}>
-        Save Permissions
+        Save Changes
       </Button>
     </div>
   );
-};
+});
+
+FeatureToggleTable.displayName = 'FeatureToggleTable';

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRBACContext } from "../context/RBACContext";
 
 export const useFetchFeaturesByCategory = (category: string) => {
@@ -8,28 +8,32 @@ export const useFetchFeaturesByCategory = (category: string) => {
 
   const { endpoints, requestHeaders } = useRBACContext();
 
-  useEffect(() => {
+  const fetchFeatures = useCallback(async () => {
     if (!category) return;
     
-    const fetchFeatures = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(endpoints.getFeaturesByCategory(category), {
-          headers: requestHeaders?.() || {},
-        });
-        const data = await res.json();
-               setFeatures(data || []);
-        console.log('Fetched features:', data); // Debug log
-      } catch (err: any) {
-        setError(err.message);
-        console.error('Error fetching features:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    try {
+      const res = await fetch(endpoints.getFeaturesByCategory(category), {
+        headers: requestHeaders?.() || {},
+      });
+      const data = await res.json();
+      setFeatures(data || []);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [category, endpoints, requestHeaders]);
 
-    fetchFeatures();
-  }, [category, endpoints, requestHeaders]); // Make sure all dependencies are listed
+  useEffect(() => {
+    if (category) {
+      fetchFeatures();
+    }
+  }, [category, fetchFeatures]);
 
-  return { features, loading, error };
+  return useMemo(() => ({ 
+    features, 
+    loading, 
+    error 
+  }), [features, loading, error]);
 };

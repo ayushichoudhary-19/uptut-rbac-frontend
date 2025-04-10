@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { useDispatch } from "react-redux";
 import { Paper, Stack } from "@mantine/core";
 import { useFetchRoles } from "../hooks/useFetchRoles";
@@ -15,7 +15,7 @@ import { FeatureToggleTable } from "./FeatureToggleTable";
 import { setFeatures } from "../store/featureSlice";
 import { RoleManagement } from "./RoleManagement";
 
-export const RBACRoleFeatureManager = () => {
+export const RBACRoleFeatureManager = memo(() => {
   const { roles, refetchRoles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -26,6 +26,10 @@ export const RBACRoleFeatureManager = () => {
 
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
+
+  // Add memoization for categoryFeatures
+  const memoizedCategoryFeatures = useMemo(() => categoryFeatures, [categoryFeatures]);
+
   const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]);
   const [isCreatingRole, setIsCreatingRole] = useState(false);
 
@@ -44,11 +48,13 @@ export const RBACRoleFeatureManager = () => {
 
   // Fix 3: Memoize handlers
   const toggleFeature = useCallback((featureId: string) => {
-    setSelectedFeatureIds((prev) =>
-      prev.includes(featureId)
-        ? prev.filter((id) => id !== featureId)
-        : [...prev, featureId]
-    );
+    setSelectedFeatureIds((prev) => {
+      const isSelected = prev.includes(featureId);
+      console.log('Toggling feature:', featureId, 'Current state:', isSelected);
+      return isSelected 
+        ? prev.filter(id => id !== featureId)
+        : [...prev, featureId];
+    });
   }, []);
 
   const handleSave = useCallback(async () => {
@@ -61,7 +67,7 @@ export const RBACRoleFeatureManager = () => {
     }
   }, [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
 
-  const handleCreateRole = async (roleId: string, roleName: string) => {
+  const handleCreateRole = useCallback(async (roleId: string, roleName: string) => {
     try {
       await addRole({ id: roleId, name: roleName });
       setIsCreatingRole(false);
@@ -70,7 +76,15 @@ export const RBACRoleFeatureManager = () => {
     } catch (error) {
       console.error('Failed to create role:', error);
     }
-  };
+  }, [addRole, refetchRoles]);
+
+  const handleCategorySelect = useCallback((category: string) => {
+    setSelectedCategory(category);
+  }, []);
+
+  const handleRoleSelect = useCallback((role: string) => {
+    setSelectedRole(role);
+  }, []);
 
   if (isCreatingRole) {
     return (
@@ -86,24 +100,24 @@ export const RBACRoleFeatureManager = () => {
       <RoleSidebar
         roles={roles}
         selected={selectedRole}
-        onSelect={setSelectedRole}
+        onSelect={handleRoleSelect}
         onAdd={() => setIsCreatingRole(true)}
       />
       <Stack className="flex-1">
-        {/* Category Tabs */}
         <FeatureCategoryTabs
           categories={categories}
           selected={selectedCategory}
-          onSelect={setSelectedCategory} // Update the selected category
+          onSelect={handleCategorySelect}
         />
-        {/* Table to toggle features */}
         <FeatureToggleTable
-          features={categoryFeatures} // List features based on category
-          selectedIds={selectedFeatureIds} // Use the selected features for the selected role
+          features={memoizedCategoryFeatures}
+          selectedIds={selectedFeatureIds}
           onToggle={toggleFeature}
           onSave={handleSave}
         />
       </Stack>
     </Paper>
   );
-};
+});
+
+RBACRoleFeatureManager.displayName = 'RBACRoleFeatureManager';

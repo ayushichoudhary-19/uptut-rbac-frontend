@@ -1,4 +1,5 @@
-import React$1 from 'react';
+import * as React$1 from 'react';
+import React__default from 'react';
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import * as redux from 'redux';
 import * as _reduxjs_toolkit from '@reduxjs/toolkit';
@@ -62,7 +63,7 @@ declare const useAddFeaturesToRole: () => {
 interface FeatureUploaderProps {
     onUpload: (featureIds: string[]) => void;
 }
-declare const FeatureUploader: React$1.FC<FeatureUploaderProps>;
+declare const FeatureUploader: React__default.FC<FeatureUploaderProps>;
 
 interface RBACSummaryProps {
     role: string;
@@ -70,7 +71,7 @@ interface RBACSummaryProps {
 }
 declare const RBACSummary: React.FC<RBACSummaryProps>;
 
-declare const RBACRoleFeatureManager: () => react_jsx_runtime.JSX.Element;
+declare const RBACRoleFeatureManager: React$1.MemoExoticComponent<() => react_jsx_runtime.JSX.Element>;
 
 interface RBACConfig {
     endpoints: {
@@ -90,7 +91,7 @@ interface RBACConfig {
 }
 
 declare const RBACProvider: ({ children, config, }: {
-    children: React$1.ReactNode;
+    children: React__default.ReactNode;
     config: RBACConfig;
 }) => react_jsx_runtime.JSX.Element;
 declare const useRBACContext: () => RBACConfig;
