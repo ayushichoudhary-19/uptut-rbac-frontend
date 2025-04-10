@@ -39,14 +39,20 @@ var __async = (__this, __arguments, generator) => {
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
+  FeatureList: () => FeatureList,
+  RBACProvider: () => RBACProvider,
+  RoleManager: () => RoleManager,
   featureReducer: () => featureSlice_default,
+  featureSlice: () => featureSlice,
+  setFeatures: () => setFeatures,
   useFeatureAccess: () => useFeatureAccess,
-  useFetchPermissions: () => useFetchPermissions
+  useFetchPermissions: () => useFetchPermissions,
+  useRBACContext: () => useRBACContext
 });
 module.exports = __toCommonJS(index_exports);
 
 // src/hooks/useFetchPermissions.ts
-var import_react = require("react");
+var import_react2 = require("react");
 var import_react_redux = require("react-redux");
 
 // src/store/featureSlice.ts
@@ -66,29 +72,108 @@ var featureSlice = (0, import_toolkit.createSlice)({
 var { setFeatures } = featureSlice.actions;
 var featureSlice_default = featureSlice.reducer;
 
+// src/context/RBACContext.tsx
+var import_react = require("react");
+var import_jsx_runtime = require("react/jsx-runtime");
+var RBACContext = (0, import_react.createContext)(void 0);
+var RBACProvider = ({
+  children,
+  getFeatureUrl
+}) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RBACContext.Provider, { value: { getFeatureUrl }, children });
+};
+var useRBACContext = () => {
+  const context = (0, import_react.useContext)(RBACContext);
+  if (!context) {
+    throw new Error("useRBACContext must be used within an RBACProvider");
+  }
+  return context;
+};
+
 // src/hooks/useFetchPermissions.ts
 var useFetchPermissions = (roleId) => {
   const dispatch = (0, import_react_redux.useDispatch)();
-  (0, import_react.useEffect)(() => {
+  const { getFeatureUrl } = useRBACContext();
+  (0, import_react2.useEffect)(() => {
     if (!roleId) return;
     const fetchFeatures = () => __async(void 0, null, function* () {
-      const res = yield fetch(`/api/features?role=\${roleId}`);
+      const res = yield fetch(getFeatureUrl(roleId));
       const data = yield res.json();
       dispatch(setFeatures(data));
     });
     fetchFeatures();
-  }, [roleId]);
+  }, [roleId, getFeatureUrl]);
 };
 
 // src/hooks/useFeatureAccess.ts
 var import_react_redux2 = require("react-redux");
 var useFeatureAccess = (featureId) => {
-  const featureIds = (0, import_react_redux2.useSelector)((state) => state.features.featureIds);
+  const featureIds = (0, import_react_redux2.useSelector)((state) => {
+    var _a, _b;
+    return (_b = (_a = state.features) == null ? void 0 : _a.featureIds) != null ? _b : [];
+  });
   return featureIds.includes(featureId);
+};
+
+// src/components/FeatureList.tsx
+var import_jsx_runtime2 = require("react/jsx-runtime");
+var FeatureList = ({
+  features,
+  selected,
+  onToggle
+}) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "space-y-2", children: features.map((feature) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { className: "flex items-center gap-2", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      "input",
+      {
+        type: "checkbox",
+        checked: selected.includes(feature.id),
+        onChange: () => onToggle(feature.id)
+      }
+    ),
+    feature.name
+  ] }, feature.id)) });
+};
+
+// src/components/RoleManager.tsx
+var import_react3 = require("react");
+var import_jsx_runtime3 = require("react/jsx-runtime");
+var RoleManager = ({ roles, onAdd }) => {
+  const [newRole, setNewRole] = (0, import_react3.useState)("");
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+      "input",
+      {
+        type: "text",
+        value: newRole,
+        onChange: (e) => setNewRole(e.target.value),
+        placeholder: "New role name",
+        className: "border p-2"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+      "button",
+      {
+        className: "bg-blue-500 text-white px-4 py-2 rounded",
+        onClick: () => {
+          onAdd(newRole);
+          setNewRole("");
+        },
+        children: "Add Role"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("ul", { className: "mt-4", children: roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)("li", { children: role }, role)) })
+  ] });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  FeatureList,
+  RBACProvider,
+  RoleManager,
   featureReducer,
+  featureSlice,
+  setFeatures,
   useFeatureAccess,
-  useFetchPermissions
+  useFetchPermissions,
+  useRBACContext
 });
