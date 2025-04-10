@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { Paper, Stack } from "@mantine/core";
 import { useFetchRoles } from "../hooks/useFetchRoles";
@@ -21,38 +21,45 @@ export const RBACRoleFeatureManager = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const { categories } = useFetchAllCategories();
   const { addRole } = useAddRole();
-  const { addFeatures } = useAddFeaturesToRole(); // Fixed method name
+  const { addFeatures } = useAddFeaturesToRole();
   const dispatch = useDispatch();
 
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
-  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]); // Moved up
+  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]);
   const [isCreatingRole, setIsCreatingRole] = useState(false);
 
   // Extract IDs from role features
   const roleFeatureIds = roleFeatures.map((f: any) => f.id);
 
-  useEffect(() => {
-    setSelectedFeatureIds(roleFeatureIds);
-  }, [roleFeatureIds]);
+  // Fix 1: Add proper dependency array and memoize roleFeatureIds
+  const memoizedRoleFeatureIds = useMemo(() => roleFeatures.map((f: any) => f.id), [roleFeatures]);
 
-  const toggleFeature = (featureId: string) => {
+  // Fix 2: Update useEffect to use memoized value and proper dependencies
+  useEffect(() => {
+    if (selectedRole) {
+      setSelectedFeatureIds(memoizedRoleFeatureIds);
+    }
+  }, [selectedRole, memoizedRoleFeatureIds]);
+
+  // Fix 3: Memoize handlers
+  const toggleFeature = useCallback((featureId: string) => {
     setSelectedFeatureIds((prev) =>
       prev.includes(featureId)
         ? prev.filter((id) => id !== featureId)
         : [...prev, featureId]
     );
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!selectedRole) return;
     try {
-      await addFeatures(selectedRole, selectedFeatureIds); // Using correct method name
+      await addFeatures(selectedRole, selectedFeatureIds);
       dispatch(setFeatures(selectedFeatureIds));
     } catch (error) {
       console.error('Failed to save features:', error);
     }
-  };
+  }, [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
 
   const handleCreateRole = async (roleId: string, roleName: string) => {
     try {

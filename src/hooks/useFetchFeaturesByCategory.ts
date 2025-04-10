@@ -10,7 +10,7 @@ export const useFetchFeaturesByCategory = (category: string) => {
 
   useEffect(() => {
     if (!category) return;
-
+    
     const fetchFeatures = async () => {
       setLoading(true);
       try {
@@ -29,7 +29,7 @@ export const useFetchFeaturesByCategory = (category: string) => {
     };
 
     fetchFeatures();
-  }, [category, endpoints, requestHeaders]);
+  }, [category, endpoints, requestHeaders]); // Make sure all dependencies are listed
 
   return { features, loading, error };
 };
