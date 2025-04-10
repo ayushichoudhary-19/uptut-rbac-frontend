@@ -120,6 +120,39 @@ var useAddRole = () => {
   return { addRole };
 };
 
+// src/hooks/useFetchRoles.ts
+import { useEffect as useEffect2, useState } from "react";
+var useFetchRoles = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  useEffect2(() => {
+    const fetchRoles = () => __async(void 0, null, function* () {
+      if (!endpoints.getRoles) {
+        setError("getRoles endpoint not defined");
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        const res = yield fetch(endpoints.getRoles(), {
+          headers: __spreadValues({}, (requestHeaders == null ? void 0 : requestHeaders()) || {})
+        });
+        if (!res.ok) throw new Error("Failed to fetch roles");
+        const data = yield res.json();
+        setRoles(data.roles || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    });
+    fetchRoles();
+  }, [endpoints, requestHeaders]);
+  return { roles, loading, error };
+};
+
 // src/hooks/useAddFeature.ts
 var useAddFeature = () => {
   const { endpoints, requestHeaders } = useRBACContext();
@@ -156,6 +189,66 @@ var useUploadFeatureJson = () => {
   return { uploadFeatures };
 };
 
+// src/hooks/useRemoveFeaturesFromRole.ts
+var useBulkRemoveFeatures = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const removeFeatures = (role, featureIds) => __async(void 0, null, function* () {
+    if (!endpoints.removeFeaturesFromRole) {
+      throw new Error("bulkRemoveFeatures endpoint not defined");
+    }
+    const res = yield fetch(endpoints.removeFeaturesFromRole, {
+      method: "DELETE",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role, featureIds })
+    });
+    if (!res.ok) throw new Error("Failed to remove features");
+    return yield res.json();
+  });
+  return { removeFeatures };
+};
+
+// src/hooks/useRemoveRole.ts
+var useRemoveRole = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const removeRole = (role) => __async(void 0, null, function* () {
+    if (!endpoints.removeRole) {
+      throw new Error("removeRole endpoint not defined");
+    }
+    const res = yield fetch(endpoints.removeRole, {
+      method: "DELETE",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role })
+    });
+    if (!res.ok) throw new Error("Failed to remove role");
+    return yield res.json();
+  });
+  return { removeRole };
+};
+
+// src/hooks/useAddFeaturesToRole.ts
+var useBulkAddFeatures = () => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const addFeaturesToRole = (role, featureIds) => __async(void 0, null, function* () {
+    if (!endpoints.addFeaturesToRole) {
+      throw new Error("bulkAddFeatures endpoint not defined");
+    }
+    const res = yield fetch(endpoints.addFeaturesToRole, {
+      method: "POST",
+      headers: __spreadValues({
+        "Content-Type": "application/json"
+      }, (requestHeaders == null ? void 0 : requestHeaders()) || {}),
+      body: JSON.stringify({ role, featureIds })
+    });
+    if (!res.ok) throw new Error("Failed to add features");
+    return yield res.json();
+  });
+  return { addFeaturesToRole };
+};
+
 // src/components/FeatureList.tsx
 import { Checkbox, Stack, Text, Paper } from "@mantine/core";
 import { jsx as jsx2, jsxs } from "react/jsx-runtime";
@@ -181,11 +274,11 @@ var FeatureList = ({
 };
 
 // src/components/RoleManager.tsx
-import { useState } from "react";
+import { useState as useState2 } from "react";
 import { Button, Input, Text as Text2, Paper as Paper2, Stack as Stack2 } from "@mantine/core";
 import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
 var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
-  const [newRole, setNewRole] = useState("");
+  const [newRole, setNewRole] = useState2("");
   const { addRole } = useAddRole();
   const handleAdd = () => __async(void 0, null, function* () {
     if (!newRole) return;
@@ -220,8 +313,12 @@ export {
   setFeatures,
   useAddFeature,
   useAddRole,
+  useBulkAddFeatures,
+  useBulkRemoveFeatures,
   useFeatureAccess,
   useFetchPermissions,
+  useFetchRoles,
   useRBACContext,
+  useRemoveRole,
   useUploadFeatureJson
 };
