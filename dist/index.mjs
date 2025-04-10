@@ -373,7 +373,7 @@ var RBACSummary = ({ role, featureIds }) => {
 
 // src/components/RBACRoleFeatureManager.tsx
 import { useState as useState5 } from "react";
-import { useSelector as useSelector2 } from "react-redux";
+import { useDispatch as useDispatch3, useSelector as useSelector2 } from "react-redux";
 import { Paper as Paper4, Stack as Stack5 } from "@mantine/core";
 
 // src/hooks/useFetchFeaturesByCategory.ts
@@ -507,21 +507,21 @@ var FeatureToggleTable = ({
 // src/components/RBACRoleFeatureManager.tsx
 import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
 var DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
-var RBACRoleFeatureManager = ({
-  initialSelectedFeatureIds
-}) => {
+var RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState5("");
   const [selectedCategory, setSelectedCategory] = useState5("dashboard");
-  const [selectedFeatureIds, setSelectedFeatureIds] = useState5(initialSelectedFeatureIds);
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
   useFetchAllFeatures();
-  const allFeatures = useSelector2((state) => state.allFeatures.allFeatures);
+  useFetchFeaturesByRole(selectedRole);
+  const dispatch = useDispatch3();
+  const selectedFeatureIds = useSelector2(
+    (state) => state.features.featureIds
+  );
   const toggleFeature = (id) => {
-    setSelectedFeatureIds(
-      (prev) => prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    );
+    const updated = selectedFeatureIds.includes(id) ? selectedFeatureIds.filter((f) => f !== id) : [...selectedFeatureIds, id];
+    dispatch(setFeatures(updated));
   };
   const handleSave = () => __async(void 0, null, function* () {
     try {

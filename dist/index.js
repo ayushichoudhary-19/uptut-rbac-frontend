@@ -550,21 +550,21 @@ var FeatureToggleTable = ({
 // src/components/RBACRoleFeatureManager.tsx
 var import_jsx_runtime10 = require("react/jsx-runtime");
 var DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
-var RBACRoleFeatureManager = ({
-  initialSelectedFeatureIds
-}) => {
+var RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = (0, import_react8.useState)("");
   const [selectedCategory, setSelectedCategory] = (0, import_react8.useState)("dashboard");
-  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react8.useState)(initialSelectedFeatureIds);
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
   useFetchAllFeatures();
-  const allFeatures = (0, import_react_redux4.useSelector)((state) => state.allFeatures.allFeatures);
+  useFetchFeaturesByRole(selectedRole);
+  const dispatch = (0, import_react_redux4.useDispatch)();
+  const selectedFeatureIds = (0, import_react_redux4.useSelector)(
+    (state) => state.features.featureIds
+  );
   const toggleFeature = (id) => {
-    setSelectedFeatureIds(
-      (prev) => prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
-    );
+    const updated = selectedFeatureIds.includes(id) ? selectedFeatureIds.filter((f) => f !== id) : [...selectedFeatureIds, id];
+    dispatch(setFeatures(updated));
   };
   const handleSave = () => __async(void 0, null, function* () {
     try {

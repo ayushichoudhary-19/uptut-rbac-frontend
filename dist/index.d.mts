@@ -84,10 +84,7 @@ interface RBACSummaryProps {
 }
 declare const RBACSummary: React.FC<RBACSummaryProps>;
 
-interface RBACRoleFeatureManagerProps {
-    initialSelectedFeatureIds: string[];
-}
-declare const RBACRoleFeatureManager: ({ initialSelectedFeatureIds, }: RBACRoleFeatureManagerProps) => react_jsx_runtime.JSX.Element;
+declare const RBACRoleFeatureManager: () => react_jsx_runtime.JSX.Element;
 
 interface RBACConfig {
     endpoints: {
