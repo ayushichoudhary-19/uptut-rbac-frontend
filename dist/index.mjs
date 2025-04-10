@@ -67,7 +67,8 @@ var useFetchPermissions = (roleId) => {
     const fetchFeatures = () => __async(void 0, null, function* () {
       const res = yield fetch(getFeatureUrl(roleId));
       const data = yield res.json();
-      dispatch(setFeatures(data));
+      const featureIds = data.map((feature) => feature.id);
+      dispatch(setFeatures(featureIds));
     });
     fetchFeatures();
   }, [roleId, getFeatureUrl]);

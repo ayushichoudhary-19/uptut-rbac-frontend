@@ -13,7 +13,10 @@ export const useFetchPermissions = (roleId: string) => {
     const fetchFeatures = async () => {
       const res = await fetch(getFeatureUrl(roleId));
       const data = await res.json();
-      dispatch(setFeatures(data));
+
+      // Only store the feature IDs (strings)
+      const featureIds = data.map((feature: any) => feature.id);
+      dispatch(setFeatures(featureIds));
     };
 
     fetchFeatures();
