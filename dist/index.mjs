@@ -290,27 +290,29 @@ import { Paper as Paper2, Stack as Stack3 } from "@mantine/core";
 // src/hooks/useFetchFeaturesByCategory.ts
 import { useState as useState4, useEffect as useEffect3 } from "react";
 var useFetchFeaturesByCategory = (category) => {
-  const { endpoints, requestHeaders } = useRBACContext();
   const [features, setFeatures2] = useState4([]);
   const [loading, setLoading] = useState4(false);
   const [error, setError] = useState4(null);
+  const { endpoints, requestHeaders } = useRBACContext();
   useEffect3(() => {
-    if (!category || !endpoints.getFeaturesByCategory) return;
-    const loadFeatures = () => __async(void 0, null, function* () {
+    if (!category) return;
+    const fetchFeatures = () => __async(void 0, null, function* () {
       setLoading(true);
       try {
         const res = yield fetch(endpoints.getFeaturesByCategory(category), {
           headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
         });
         const data = yield res.json();
-        setFeatures2(data.features || []);
+        setFeatures2(data || []);
+        console.log("Fetched features:", data);
       } catch (err) {
         setError(err.message);
+        console.error("Error fetching features:", err);
       } finally {
         setLoading(false);
       }
     });
-    loadFeatures();
+    fetchFeatures();
   }, [category, endpoints, requestHeaders]);
   return { features, loading, error };
 };

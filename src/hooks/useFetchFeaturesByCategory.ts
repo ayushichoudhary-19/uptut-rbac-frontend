@@ -2,30 +2,33 @@ import { useState, useEffect } from "react";
 import { useRBACContext } from "../context/RBACContext";
 
 export const useFetchFeaturesByCategory = (category: string) => {
-  const { endpoints, requestHeaders } = useRBACContext();
   const [features, setFeatures] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!category || !endpoints.getFeaturesByCategory) return;
+  const { endpoints, requestHeaders } = useRBACContext();
 
-    const loadFeatures = async () => {
+  useEffect(() => {
+    if (!category) return;
+
+    const fetchFeatures = async () => {
       setLoading(true);
       try {
         const res = await fetch(endpoints.getFeaturesByCategory(category), {
           headers: requestHeaders?.() || {},
         });
         const data = await res.json();
-        setFeatures(data.features || []);
+               setFeatures(data || []);
+        console.log('Fetched features:', data); // Debug log
       } catch (err: any) {
         setError(err.message);
+        console.error('Error fetching features:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    loadFeatures();
+    fetchFeatures();
   }, [category, endpoints, requestHeaders]);
 
   return { features, loading, error };
