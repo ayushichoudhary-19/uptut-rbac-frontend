@@ -460,7 +460,7 @@ var useFetchAllCategories = () => {
           headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
         });
         const data = yield res.json();
-        setCategories(data.categories || []);
+        setCategories(data || []);
       } catch (err) {
         setError(err.message);
         console.error("Error fetching categories:", err);
@@ -501,7 +501,10 @@ var FeatureCategoryTabs = ({
   categories,
   selected,
   onSelect
-}) => /* @__PURE__ */ jsx8(Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ jsx8(Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ jsx8(Tabs.Tab, { value: cat, children: cat }, cat)) }) });
+}) => {
+  console.log("Rendering categories:", categories);
+  return /* @__PURE__ */ jsx8(Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ jsx8(Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ jsx8(Tabs.Tab, { value: cat, children: cat }, cat)) }) });
+};
 
 // src/components/FeatureToggleTable.tsx
 import { Checkbox as Checkbox2, Table, Button as Button4 } from "@mantine/core";

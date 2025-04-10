@@ -18,7 +18,9 @@ export const useFetchAllCategories = () => {
           headers: requestHeaders?.() || {},
         });
         const data = await res.json();
-        setCategories(data.categories || []);
+        
+        // Directly setting the response array as categories
+        setCategories(data || []);
       } catch (err: any) {
         setError(err.message);
         console.error("Error fetching categories:", err);

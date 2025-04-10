@@ -9,14 +9,18 @@ export const FeatureCategoryTabs = ({
   categories: string[];
   selected: string;
   onSelect: (c: string) => void;
-}) => (
-  <Tabs value={selected} onChange={onSelect} variant="outline">
-    <Tabs.List>
-      {categories.map((cat) => (
-        <Tabs.Tab key={cat} value={cat}>
-          {cat}
-        </Tabs.Tab>
-      ))}
-    </Tabs.List>
-  </Tabs>
-);
+}) => {
+  console.log("Rendering categories:", categories);
+
+  return (
+    <Tabs value={selected} onChange={onSelect} variant="outline">
+      <Tabs.List>
+        {categories.map((cat) => (
+          <Tabs.Tab key={cat} value={cat}>
+            {cat}
+          </Tabs.Tab>
+        ))}
+      </Tabs.List>
+    </Tabs>
+  );
+};
