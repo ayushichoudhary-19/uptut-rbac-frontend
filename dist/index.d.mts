@@ -5,7 +5,11 @@ import * as _reduxjs_toolkit from '@reduxjs/toolkit';
 import { PayloadAction } from '@reduxjs/toolkit';
 import * as immer from 'immer';
 
-declare const useFetchFeaturesByRole: (roleId: string) => void;
+declare const useFetchFeaturesByRole: (roleId: string) => {
+    features: any[];
+    loading: boolean;
+    error: string;
+};
 
 declare const useFeatureAccess: (featureId: string) => boolean;
 
@@ -47,31 +51,12 @@ declare const useAddFeaturesToRole: () => {
     addFeatures: (role: string, featureIds: string[]) => Promise<any>;
 };
 
-interface FeatureListProps {
-    features: {
-        id: string;
-        name: string;
-    }[];
-    selected: string[];
-    onToggle: (id: string) => void;
-    primaryColor?: string;
-}
-declare const FeatureList: React$1.FC<FeatureListProps>;
-
 interface RoleManagerProps {
     roles: string[];
     onAdd: (role: string) => void;
     primaryColor?: string;
 }
 declare const RoleManager: React$1.FC<RoleManagerProps>;
-
-interface RoleSelectorProps {
-    roles: string[];
-    selected: string | null;
-    onChange: (value: string | null) => void;
-    label?: string;
-}
-declare const RoleSelector: React$1.FC<RoleSelectorProps>;
 
 interface FeatureUploaderProps {
     onUpload: (featureIds: string[]) => void;
@@ -134,4 +119,4 @@ declare const setAllFeatures: _reduxjs_toolkit.ActionCreatorWithOptionalPayload<
     category?: string;
 }[], "allFeatures/setAllFeatures">;
 
-export { type AllFeaturesState, FeatureList, type FeatureState, FeatureUploader, type RBACConfig, RBACProvider, RBACRoleFeatureManager, RBACSummary, RoleManager, RoleSelector, allFeaturesSlice, _default as featureReducer, featureSlice, setAllFeatures, setFeatures, useAddFeature, useAddFeaturesToRole, useAddRole, useFeatureAccess, useFetchFeaturesByRole, useFetchRoles, useRBACContext, useRemoveFeaturesFromRole, useRemoveRole, useUploadFeatureJson };
+export { type AllFeaturesState, type FeatureState, FeatureUploader, type RBACConfig, RBACProvider, RBACRoleFeatureManager, RBACSummary, RoleManager, allFeaturesSlice, _default as featureReducer, featureSlice, setAllFeatures, setFeatures, useAddFeature, useAddFeaturesToRole, useAddRole, useFeatureAccess, useFetchFeaturesByRole, useFetchRoles, useRBACContext, useRemoveFeaturesFromRole, useRemoveRole, useUploadFeatureJson };
