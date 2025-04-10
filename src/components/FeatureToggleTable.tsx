@@ -11,17 +11,13 @@ export const FeatureToggleTable = ({
   onToggle: (id: string) => void;
   onSave: () => void;
 }) => {
-  // Add this console log
-  console.log("Features received in table:", features);
-
   return (
     <div>
       <Table striped highlightOnHover>
         <thead>
           <tr>
             <th>Toggle</th>
-            <th>Feature ID</th>
-            <th>Feature Name</th>
+            <th>Feature</th>
           </tr>
         </thead>
         <tbody>
@@ -33,7 +29,6 @@ export const FeatureToggleTable = ({
                   onChange={() => onToggle(f.id)}
                 />
               </td>
-              <td>{f.id}</td>
               <td>{f.name}</td>
             </tr>
           ))}

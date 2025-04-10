@@ -8,63 +8,79 @@ import { useFetchFeaturesByCategory } from "../hooks/useFetchFeaturesByCategory"
 import { useAddFeaturesToRole } from "../hooks/useAddFeaturesToRole";
 import { useFetchFeaturesByRole } from "../hooks/useFetchFeaturesByRole";
 import { useFetchAllCategories } from "../hooks/useFetchAllCategories";
+import { useAddRole } from "../hooks/useAddRole"; // Add this import
 import { RoleSidebar } from "./RoleSidebar";
 import { FeatureCategoryTabs } from "./FeatureCategoryTabs";
 import { FeatureToggleTable } from "./FeatureToggleTable";
 import { setFeatures } from "../store/featureSlice";
+import { RoleManagement } from "./RoleManagement";
 
 export const RBACRoleFeatureManager = () => {
-  const { roles } = useFetchRoles();
+  const { roles, refetchRoles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const { categories } = useFetchAllCategories();
+  const { addRole } = useAddRole();
+  const { addFeatures } = useAddFeaturesToRole(); // Fixed method name
+  const dispatch = useDispatch();
 
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
+  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]); // Moved up
+  const [isCreatingRole, setIsCreatingRole] = useState(false);
 
   // Extract IDs from role features
   const roleFeatureIds = roleFeatures.map((f: any) => f.id);
 
-  // When role changes, update selected features to match role's features
   useEffect(() => {
     setSelectedFeatureIds(roleFeatureIds);
   }, [roleFeatureIds]);
 
-  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]);
-
-  const { addFeatures } = useAddFeaturesToRole();
-  
-  const toggleFeature = (id: string) => {
-    const updated = selectedFeatureIds.includes(id)
-      ? selectedFeatureIds.filter((f) => f !== id)
-      : [...selectedFeatureIds, id];
-    setSelectedFeatureIds(updated);
+  const toggleFeature = (featureId: string) => {
+    setSelectedFeatureIds((prev) =>
+      prev.includes(featureId)
+        ? prev.filter((id) => id !== featureId)
+        : [...prev, featureId]
+    );
   };
 
   const handleSave = async () => {
+    if (!selectedRole) return;
     try {
-      await addFeatures(selectedRole, selectedFeatureIds);
-      alert("Permissions updated!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to update permissions");
+      await addFeatures(selectedRole, selectedFeatureIds); // Using correct method name
+      dispatch(setFeatures(selectedFeatureIds));
+    } catch (error) {
+      console.error('Failed to save features:', error);
     }
   };
 
-  useEffect(() => {
-    if (categories.length && !selectedCategory) {
-      setSelectedCategory(categories[0]); // Set the first category as selected
+  const handleCreateRole = async (roleId: string, roleName: string) => {
+    try {
+      await addRole({ id: roleId, name: roleName });
+      setIsCreatingRole(false);
+      await refetchRoles();
+      setSelectedRole(roleId);
+    } catch (error) {
+      console.error('Failed to create role:', error);
     }
-  }, [categories, selectedCategory]);
+  };
+
+  if (isCreatingRole) {
+    return (
+      <RoleManagement
+        onRoleCreate={handleCreateRole}
+        onCancel={() => setIsCreatingRole(false)}
+      />
+    );
+  }
 
   return (
     <Paper className="p-6 flex gap-6" withBorder>
-      {/* Sidebar for selecting roles */}
       <RoleSidebar
         roles={roles}
         selected={selectedRole}
         onSelect={setSelectedRole}
-        onAdd={() => {}}
+        onAdd={() => setIsCreatingRole(true)}
       />
       <Stack className="flex-1">
         {/* Category Tabs */}

@@ -6,25 +6,27 @@ export const RoleSidebar = ({
   onSelect,
   onAdd,
 }: {
-  roles: string[];
+  roles: Array<{ id: string; name: string }>;
   selected: string;
-  onSelect: (r: string) => void;
+  onSelect: (id: string) => void;
   onAdd: () => void;
-}) => (
-  <Paper p="md" withBorder className="w-64">
-    <Stack>
-      {roles.map((role) => (
-        <Button
-          key={role}
-          variant={role === selected ? "filled" : "light"}
-          onClick={() => onSelect(role)}
-        >
-          {role}
-        </Button>
-      ))}
-      <Button variant="outline" onClick={onAdd}>
-        + Add More
+}) => {
+  return (
+    <Stack className="w-64">
+      <Button onClick={onAdd}>
+       + Add Role
       </Button>
+      <Stack gap="xs">
+        {roles.map((role) => (
+          <Button
+            key={role.id}
+            variant={selected === role.id ? "filled" : "subtle"}
+            onClick={() => onSelect(role.id)}
+          >
+            {role.name}
+          </Button>
+        ))}
+      </Stack>
     </Stack>
-  </Paper>
-);
+  );
+};

@@ -14,13 +14,21 @@ declare const useFetchFeaturesByRole: (roleId: string) => {
 declare const useFeatureAccess: (featureId: string) => boolean;
 
 declare const useAddRole: () => {
-    addRole: (role: string) => Promise<any>;
+    addRole: ({ id, name }: {
+        id: string;
+        name: string;
+    }) => Promise<any>;
 };
 
+interface Role {
+    id: string;
+    name: string;
+}
 declare const useFetchRoles: () => {
-    roles: string[];
+    roles: Role[];
     loading: boolean;
     error: string;
+    refetchRoles: () => Promise<void>;
 };
 
 declare const useAddFeature: () => {
