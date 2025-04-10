@@ -462,12 +462,13 @@ var RBACRoleFeatureManager = () => {
   const [selectedCategory, setSelectedCategory] = (0, import_react7.useState)("");
   const { categories } = useFetchAllCategories();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
-  console.log("Selected Category:", selectedCategory);
-  console.log("Category Features:", categoryFeatures);
-  const { features: roleFeatures } = useFetchFeaturesByRole(selectedRole);
+  const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
+  (0, import_react7.useEffect)(() => {
+    setSelectedFeatureIds(roleFeatureIds);
+  }, [roleFeatureIds]);
+  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react7.useState)([]);
   const { addFeatures } = useAddFeaturesToRole();
-  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react7.useState)(roleFeatureIds);
   const toggleFeature = (id) => {
     const updated = selectedFeatureIds.includes(id) ? selectedFeatureIds.filter((f) => f !== id) : [...selectedFeatureIds, id];
     setSelectedFeatureIds(updated);

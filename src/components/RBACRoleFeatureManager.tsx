@@ -20,18 +20,20 @@ export const RBACRoleFeatureManager = () => {
   const { categories } = useFetchAllCategories();
 
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
+  const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
 
-  // Add these console logs
-  console.log("Selected Category:", selectedCategory);
-  console.log("Category Features:", categoryFeatures);
-
-  const { features:roleFeatures } = useFetchFeaturesByRole(selectedRole);
+  // Extract IDs from role features
   const roleFeatureIds = roleFeatures.map((f: any) => f.id);
+
+  // When role changes, update selected features to match role's features
+  useEffect(() => {
+    setSelectedFeatureIds(roleFeatureIds);
+  }, [roleFeatureIds]);
+
+  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]);
 
   const { addFeatures } = useAddFeaturesToRole();
   
-  const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>(roleFeatureIds);
-
   const toggleFeature = (id: string) => {
     const updated = selectedFeatureIds.includes(id)
       ? selectedFeatureIds.filter((f) => f !== id)
