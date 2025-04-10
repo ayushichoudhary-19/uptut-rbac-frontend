@@ -56,6 +56,7 @@ __export(index_exports, {
   FeatureList: () => FeatureList,
   FeatureUploader: () => FeatureUploader,
   RBACProvider: () => RBACProvider,
+  RBACRoleFeatureManager: () => RBACRoleFeatureManager,
   RBACSummary: () => RBACSummary,
   RoleManager: () => RoleManager,
   RoleSelector: () => RoleSelector,
@@ -289,17 +290,73 @@ var useAddFeaturesToRole = () => {
   return { addFeatures: addFeaturesToRole };
 };
 
-// src/components/RoleSelector.tsx
+// src/components/FeatureList.tsx
 var import_core = require("@mantine/core");
 var import_jsx_runtime2 = require("react/jsx-runtime");
+var FeatureList = ({
+  features,
+  selected,
+  onToggle,
+  primaryColor = "blue"
+}) => {
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_core.Paper, { shadow: "xs", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_core.Stack, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_core.Text, { fw: 600, mb: "sm", children: "Select Features" }),
+    features.map((feature) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      import_core.Checkbox,
+      {
+        label: feature.name,
+        checked: selected.includes(feature.id),
+        onChange: () => onToggle(feature.id),
+        color: primaryColor
+      },
+      feature.id
+    ))
+  ] }) });
+};
+
+// src/components/RoleManager.tsx
+var import_react4 = require("react");
+var import_core2 = require("@mantine/core");
+var import_jsx_runtime3 = require("react/jsx-runtime");
+var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
+  const [newRole, setNewRole] = (0, import_react4.useState)("");
+  const { addRole } = useAddRole();
+  const handleAdd = () => __async(void 0, null, function* () {
+    if (!newRole) return;
+    try {
+      yield addRole(newRole);
+      onAdd(newRole);
+      setNewRole("");
+    } catch (e) {
+      console.error(e);
+    }
+  });
+  return /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Paper, { shadow: "sm", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)(import_core2.Stack, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(
+      import_core2.Input,
+      {
+        value: newRole,
+        onChange: (e) => setNewRole(e.currentTarget.value),
+        placeholder: "Enter new role"
+      }
+    ),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Button, { color: primaryColor, onClick: handleAdd, children: "Add Role" }),
+    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Text, { fw: 600, children: "Existing Roles:" }),
+    roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Text, { size: "sm", c: "dimmed", children: role }, role))
+  ] }) });
+};
+
+// src/components/RoleSelector.tsx
+var import_core3 = require("@mantine/core");
+var import_jsx_runtime4 = require("react/jsx-runtime");
 var RoleSelector = ({
   roles,
   selected,
   onChange,
   label = "Select Role"
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-    import_core.Select,
+  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
+    import_core3.Select,
     {
       label,
       value: selected,
@@ -313,12 +370,12 @@ var RoleSelector = ({
 };
 
 // src/components/FeatureUploader.tsx
-var import_react4 = require("react");
+var import_react5 = require("react");
 var import_dropzone = require("@mantine/dropzone");
-var import_core2 = require("@mantine/core");
-var import_jsx_runtime3 = require("react/jsx-runtime");
+var import_core4 = require("@mantine/core");
+var import_jsx_runtime5 = require("react/jsx-runtime");
 var FeatureUploader = ({ onUpload }) => {
-  const [error, setError] = (0, import_react4.useState)(null);
+  const [error, setError] = (0, import_react5.useState)(null);
   const handleDrop = (files) => __async(void 0, null, function* () {
     const file = files[0];
     if (!file) return;
@@ -335,86 +392,186 @@ var FeatureUploader = ({ onUpload }) => {
       setError("Failed to parse JSON file");
     }
   });
-  return /* @__PURE__ */ (0, import_jsx_runtime3.jsxs)("div", { className: "space-y-3", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_dropzone.Dropzone, { onDrop: handleDrop, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Group, { justify: "center", mih: 100, children: /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Text, { size: "sm", children: "Drop or click to upload feature JSON" }) }) }),
-    error && /* @__PURE__ */ (0, import_jsx_runtime3.jsx)(import_core2.Text, { c: "red", children: error })
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)("div", { className: "space-y-3", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_dropzone.Dropzone, { onDrop: handleDrop, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Group, { justify: "center", mih: 100, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Text, { size: "sm", children: "Drop or click to upload feature JSON" }) }) }),
+    error && /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Text, { c: "red", children: error })
   ] });
 };
 
 // src/components/RBACSummary.tsx
-var import_core3 = require("@mantine/core");
-var import_jsx_runtime4 = require("react/jsx-runtime");
+var import_core5 = require("@mantine/core");
+var import_jsx_runtime6 = require("react/jsx-runtime");
 var RBACSummary = ({ role, featureIds }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_core3.Card, { shadow: "sm", radius: "md", withBorder: true, p: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_core3.Stack, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(import_core3.Text, { fw: 700, size: "lg", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Card, { shadow: "sm", radius: "md", withBorder: true, p: "lg", children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_core5.Stack, { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_core5.Text, { fw: 700, size: "lg", children: [
       "Role: ",
       role
     ] }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_core3.Text, { fw: 500, children: "Assigned Features:" }),
-    /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_core3.Stack, { gap: 4, children: featureIds.length > 0 ? featureIds.map((id) => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_core3.Badge, { children: id }, id)) : /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(import_core3.Text, { size: "sm", c: "dimmed", children: "No features assigned" }) })
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Text, { fw: 500, children: "Assigned Features:" }),
+    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Stack, { gap: 4, children: featureIds.length > 0 ? featureIds.map((id) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Badge, { children: id }, id)) : /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Text, { size: "sm", c: "dimmed", children: "No features assigned" }) })
   ] }) });
 };
 
-// src/components/FeatureList.tsx
-var import_core4 = require("@mantine/core");
-var import_jsx_runtime5 = require("react/jsx-runtime");
-var FeatureList = ({
-  features,
+// src/components/RBACRoleFeatureManager.tsx
+var import_react7 = require("react");
+
+// src/components/FeatureCategoryTabs.tsx
+var import_core6 = require("@mantine/core");
+var import_jsx_runtime7 = require("react/jsx-runtime");
+var FeatureCategoryTabs = ({
+  categories,
   selected,
+  onSelect
+}) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime7.jsx)(import_core6.Tabs.Tab, { value: cat, children: cat }, cat)) }) });
+
+// src/components/FeatureToggleTable.tsx
+var import_core7 = require("@mantine/core");
+var import_jsx_runtime8 = require("react/jsx-runtime");
+var FeatureToggleTable = ({
+  features,
+  selectedIds,
   onToggle,
-  primaryColor = "blue"
+  onSave
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Paper, { shadow: "xs", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ (0, import_jsx_runtime5.jsxs)(import_core4.Stack, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Text, { fw: 600, mb: "sm", children: "Select Features" }),
-    features.map((feature) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(
-      import_core4.Checkbox,
-      {
-        label: feature.name,
-        checked: selected.includes(feature.id),
-        onChange: () => onToggle(feature.id),
-        color: primaryColor
-      },
-      feature.id
-    ))
-  ] }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("div", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(import_core7.Table, { striped: true, highlightOnHover: true, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("thead", { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("th", { children: "Toggle" }),
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("th", { children: "Feature ID" }),
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("th", { children: "Feature Name" })
+      ] }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("tbody", { children: features.map((f) => /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)("tr", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
+          import_core7.Checkbox,
+          {
+            checked: selectedIds.includes(f.id),
+            onChange: () => onToggle(f.id)
+          }
+        ) }),
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("td", { children: f.id }),
+        /* @__PURE__ */ (0, import_jsx_runtime8.jsx)("td", { children: f.name })
+      ] }, f.id)) })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_core7.Button, { mt: "md", onClick: onSave, children: "Save Permissions" })
+  ] });
 };
 
-// src/components/RoleManager.tsx
-var import_react5 = require("react");
-var import_core5 = require("@mantine/core");
-var import_jsx_runtime6 = require("react/jsx-runtime");
-var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
-  const [newRole, setNewRole] = (0, import_react5.useState)("");
-  const { addRole } = useAddRole();
-  const handleAdd = () => __async(void 0, null, function* () {
-    if (!newRole) return;
+// src/components/RoleSidebar.tsx
+var import_core8 = require("@mantine/core");
+var import_jsx_runtime9 = require("react/jsx-runtime");
+var RoleSidebar = ({
+  roles,
+  selected,
+  onSelect,
+  onAdd
+}) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_core8.Paper, { p: "md", withBorder: true, className: "w-64", children: /* @__PURE__ */ (0, import_jsx_runtime9.jsxs)(import_core8.Stack, { children: [
+  roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(
+    import_core8.Button,
+    {
+      variant: role === selected ? "filled" : "light",
+      onClick: () => onSelect(role),
+      children: role
+    },
+    role
+  )),
+  /* @__PURE__ */ (0, import_jsx_runtime9.jsx)(import_core8.Button, { variant: "outline", onClick: onAdd, children: "+ Add More" })
+] }) });
+
+// src/components/RBACRoleFeatureManager.tsx
+var import_core9 = require("@mantine/core");
+
+// src/hooks/useFetchFeaturesByCategory.ts
+var import_react6 = require("react");
+var useFetchFeaturesByCategory = (category) => {
+  const { endpoints, requestHeaders } = useRBACContext();
+  const [features, setFeatures2] = (0, import_react6.useState)([]);
+  const [loading, setLoading] = (0, import_react6.useState)(false);
+  const [error, setError] = (0, import_react6.useState)(null);
+  (0, import_react6.useEffect)(() => {
+    if (!category || !endpoints.getFeaturesByCategory) return;
+    const loadFeatures = () => __async(void 0, null, function* () {
+      setLoading(true);
+      try {
+        const res = yield fetch(endpoints.getFeaturesByCategory(category), {
+          headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
+        });
+        const data = yield res.json();
+        setFeatures2(data.features || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    });
+    loadFeatures();
+  }, [category, endpoints, requestHeaders]);
+  return { features, loading, error };
+};
+
+// src/components/RBACRoleFeatureManager.tsx
+var import_jsx_runtime10 = require("react/jsx-runtime");
+var DUMMY_CATEGORIES = ["dashboard", "campaigns", "labs", "meetings"];
+var RBACRoleFeatureManager = ({
+  initialSelectedFeatureIds
+}) => {
+  const { roles } = useFetchRoles();
+  const [selectedRole, setSelectedRole] = (0, import_react7.useState)("");
+  const [selectedCategory, setSelectedCategory] = (0, import_react7.useState)("dashboard");
+  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react7.useState)(initialSelectedFeatureIds);
+  const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
+  const { addFeatures } = useAddFeaturesToRole();
+  const toggleFeature = (id) => {
+    setSelectedFeatureIds(
+      (prev) => prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id]
+    );
+  };
+  const handleSave = () => __async(void 0, null, function* () {
     try {
-      yield addRole(newRole);
-      onAdd(newRole);
-      setNewRole("");
-    } catch (e) {
-      console.error(e);
+      yield addFeatures(selectedRole, selectedFeatureIds);
+      alert("Permissions updated!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update permissions");
     }
   });
-  return /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Paper, { shadow: "sm", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)(import_core5.Stack, { children: [
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
-      import_core5.Input,
+  return /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(import_core9.Paper, { className: "p-6 flex gap-6", withBorder: true, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+      RoleSidebar,
       {
-        value: newRole,
-        onChange: (e) => setNewRole(e.currentTarget.value),
-        placeholder: "Enter new role"
+        roles,
+        selected: selectedRole,
+        onSelect: setSelectedRole,
+        onAdd: () => {
+        }
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Button, { color: primaryColor, onClick: handleAdd, children: "Add Role" }),
-    /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Text, { fw: 600, children: "Existing Roles:" }),
-    roles.map((role) => /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Text, { size: "sm", c: "dimmed", children: role }, role))
-  ] }) });
+    /* @__PURE__ */ (0, import_jsx_runtime10.jsxs)(import_core9.Stack, { className: "flex-1", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+        FeatureCategoryTabs,
+        {
+          categories: DUMMY_CATEGORIES,
+          selected: selectedCategory,
+          onSelect: setSelectedCategory
+        }
+      ),
+      /* @__PURE__ */ (0, import_jsx_runtime10.jsx)(
+        FeatureToggleTable,
+        {
+          features: categoryFeatures,
+          selectedIds: selectedFeatureIds,
+          onToggle: toggleFeature,
+          onSave: handleSave
+        }
+      )
+    ] })
+  ] });
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   FeatureList,
   FeatureUploader,
   RBACProvider,
+  RBACRoleFeatureManager,
   RBACSummary,
   RoleManager,
   RoleSelector,
