@@ -540,7 +540,7 @@ import { jsx as jsx10, jsxs as jsxs7 } from "react/jsx-runtime";
 var RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState6("");
-  const [selectedCategory, setSelectedCategory] = useState6("dashboard");
+  const [selectedCategory, setSelectedCategory] = useState6("");
   const { categories } = useFetchAllCategories();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();

@@ -21,7 +21,7 @@ import { setFeatures } from "../store/featureSlice";
 export const RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("dashboard");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const { categories } = useFetchAllCategories();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();

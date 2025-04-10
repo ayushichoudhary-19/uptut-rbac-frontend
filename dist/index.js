@@ -583,7 +583,7 @@ var import_jsx_runtime10 = require("react/jsx-runtime");
 var RBACRoleFeatureManager = () => {
   const { roles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = (0, import_react9.useState)("");
-  const [selectedCategory, setSelectedCategory] = (0, import_react9.useState)("dashboard");
+  const [selectedCategory, setSelectedCategory] = (0, import_react9.useState)("");
   const { categories } = useFetchAllCategories();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { addFeatures } = useAddFeaturesToRole();
