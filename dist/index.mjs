@@ -372,16 +372,17 @@ var RoleSidebar = ({
 };
 
 // src/components/FeatureCategoryTabs.tsx
+import { memo } from "react";
 import { Tabs } from "@mantine/core";
 import { jsx as jsx5 } from "react/jsx-runtime";
-var FeatureCategoryTabs = ({
+var FeatureCategoryTabs = memo(({
   categories,
   selected,
   onSelect
 }) => {
-  console.log("Rendering categories:", categories);
   return /* @__PURE__ */ jsx5(Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ jsx5(Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ jsx5(Tabs.Tab, { value: cat, children: cat }, cat)) }) });
-};
+});
+FeatureCategoryTabs.displayName = "FeatureCategoryTabs";
 
 // src/components/FeatureToggleTable.tsx
 import { Checkbox, Table, Button as Button3 } from "@mantine/core";

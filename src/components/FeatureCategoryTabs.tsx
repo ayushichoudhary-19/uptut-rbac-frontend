@@ -1,7 +1,7 @@
-import React from "react";
+import { memo } from "react";
 import { Tabs } from "@mantine/core";
 
-export const FeatureCategoryTabs = ({
+export const FeatureCategoryTabs = memo(({
   categories,
   selected,
   onSelect,
@@ -10,8 +10,6 @@ export const FeatureCategoryTabs = ({
   selected: string;
   onSelect: (c: string) => void;
 }) => {
-  console.log("Rendering categories:", categories);
-
   return (
     <Tabs value={selected} onChange={onSelect} variant="outline">
       <Tabs.List>
@@ -23,4 +21,6 @@ export const FeatureCategoryTabs = ({
       </Tabs.List>
     </Tabs>
   );
-};
+});
+
+FeatureCategoryTabs.displayName = 'FeatureCategoryTabs';

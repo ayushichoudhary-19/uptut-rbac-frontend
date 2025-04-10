@@ -323,7 +323,7 @@ var RBACSummary = ({ role, featureIds }) => {
 };
 
 // src/components/RBACRoleFeatureManager.tsx
-var import_react8 = require("react");
+var import_react9 = require("react");
 var import_react_redux2 = require("react-redux");
 var import_core7 = require("@mantine/core");
 
@@ -412,16 +412,17 @@ var RoleSidebar = ({
 };
 
 // src/components/FeatureCategoryTabs.tsx
+var import_react7 = require("react");
 var import_core4 = require("@mantine/core");
 var import_jsx_runtime5 = require("react/jsx-runtime");
-var FeatureCategoryTabs = ({
+var FeatureCategoryTabs = (0, import_react7.memo)(({
   categories,
   selected,
   onSelect
 }) => {
-  console.log("Rendering categories:", categories);
   return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.Tab, { value: cat, children: cat }, cat)) }) });
-};
+});
+FeatureCategoryTabs.displayName = "FeatureCategoryTabs";
 
 // src/components/FeatureToggleTable.tsx
 var import_core5 = require("@mantine/core");
@@ -471,12 +472,12 @@ var { setFeatures } = featureSlice.actions;
 var featureSlice_default = featureSlice.reducer;
 
 // src/components/RoleManagement.tsx
-var import_react7 = require("react");
+var import_react8 = require("react");
 var import_core6 = require("@mantine/core");
 var import_jsx_runtime7 = require("react/jsx-runtime");
 var RoleManagement = ({ onRoleCreate, onCancel }) => {
-  const [roleName, setRoleName] = (0, import_react7.useState)("");
-  const [roleId, setRoleId] = (0, import_react7.useState)("");
+  const [roleName, setRoleName] = (0, import_react8.useState)("");
+  const [roleId, setRoleId] = (0, import_react8.useState)("");
   const generateSlug = (name) => {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/(^_|_$)/g, "");
   };
@@ -521,18 +522,18 @@ var RoleManagement = ({ onRoleCreate, onCancel }) => {
 var import_jsx_runtime8 = require("react/jsx-runtime");
 var RBACRoleFeatureManager = () => {
   const { roles, refetchRoles } = useFetchRoles();
-  const [selectedRole, setSelectedRole] = (0, import_react8.useState)("");
-  const [selectedCategory, setSelectedCategory] = (0, import_react8.useState)("");
+  const [selectedRole, setSelectedRole] = (0, import_react9.useState)("");
+  const [selectedCategory, setSelectedCategory] = (0, import_react9.useState)("");
   const { categories } = useFetchAllCategories();
   const { addRole } = useAddRole();
   const { addFeatures } = useAddFeaturesToRole();
   const dispatch = (0, import_react_redux2.useDispatch)();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
-  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react8.useState)([]);
-  const [isCreatingRole, setIsCreatingRole] = (0, import_react8.useState)(false);
+  const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react9.useState)([]);
+  const [isCreatingRole, setIsCreatingRole] = (0, import_react9.useState)(false);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
-  (0, import_react8.useEffect)(() => {
+  (0, import_react9.useEffect)(() => {
     setSelectedFeatureIds(roleFeatureIds);
   }, [roleFeatureIds]);
   const toggleFeature = (featureId) => {
