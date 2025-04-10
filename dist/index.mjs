@@ -249,18 +249,84 @@ var useBulkAddFeatures = () => {
   return { addFeaturesToRole };
 };
 
+// src/components/RoleSelector.tsx
+import { Select } from "@mantine/core";
+import { jsx as jsx2 } from "react/jsx-runtime";
+var RoleSelector = ({
+  roles,
+  selected,
+  onChange,
+  label = "Select Role"
+}) => {
+  return /* @__PURE__ */ jsx2(
+    Select,
+    {
+      label,
+      value: selected,
+      onChange,
+      data: roles.map((role) => ({ value: role, label: role })),
+      placeholder: "Pick a role",
+      clearable: true,
+      searchable: true
+    }
+  );
+};
+
+// src/components/FeatureUploader.tsx
+import { useState as useState2 } from "react";
+import { Dropzone } from "@mantine/dropzone";
+import { Text, Group } from "@mantine/core";
+import { jsx as jsx3, jsxs } from "react/jsx-runtime";
+var FeatureUploader = ({ onUpload }) => {
+  const [error, setError] = useState2(null);
+  const handleDrop = (files) => __async(void 0, null, function* () {
+    const file = files[0];
+    if (!file) return;
+    try {
+      const text = yield file.text();
+      const data = JSON.parse(text);
+      if (Array.isArray(data)) {
+        const ids = data.map((f) => f.id || f);
+        onUpload(ids);
+      } else {
+        setError("Invalid JSON format");
+      }
+    } catch (e) {
+      setError("Failed to parse JSON file");
+    }
+  });
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+    /* @__PURE__ */ jsx3(Dropzone, { onDrop: handleDrop, children: /* @__PURE__ */ jsx3(Group, { justify: "center", mih: 100, children: /* @__PURE__ */ jsx3(Text, { size: "sm", children: "Drop or click to upload feature JSON" }) }) }),
+    error && /* @__PURE__ */ jsx3(Text, { c: "red", children: error })
+  ] });
+};
+
+// src/components/RBACSummary.tsx
+import { Card, Text as Text2, Stack, Badge } from "@mantine/core";
+import { jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
+var RBACSummary = ({ role, featureIds }) => {
+  return /* @__PURE__ */ jsx4(Card, { shadow: "sm", radius: "md", withBorder: true, p: "lg", children: /* @__PURE__ */ jsxs2(Stack, { children: [
+    /* @__PURE__ */ jsxs2(Text2, { fw: 700, size: "lg", children: [
+      "Role: ",
+      role
+    ] }),
+    /* @__PURE__ */ jsx4(Text2, { fw: 500, children: "Assigned Features:" }),
+    /* @__PURE__ */ jsx4(Stack, { gap: 4, children: featureIds.length > 0 ? featureIds.map((id) => /* @__PURE__ */ jsx4(Badge, { children: id }, id)) : /* @__PURE__ */ jsx4(Text2, { size: "sm", c: "dimmed", children: "No features assigned" }) })
+  ] }) });
+};
+
 // src/components/FeatureList.tsx
-import { Checkbox, Stack, Text, Paper } from "@mantine/core";
-import { jsx as jsx2, jsxs } from "react/jsx-runtime";
+import { Checkbox, Stack as Stack2, Text as Text3, Paper } from "@mantine/core";
+import { jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
 var FeatureList = ({
   features,
   selected,
   onToggle,
   primaryColor = "blue"
 }) => {
-  return /* @__PURE__ */ jsx2(Paper, { shadow: "xs", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ jsxs(Stack, { children: [
-    /* @__PURE__ */ jsx2(Text, { fw: 600, mb: "sm", children: "Select Features" }),
-    features.map((feature) => /* @__PURE__ */ jsx2(
+  return /* @__PURE__ */ jsx5(Paper, { shadow: "xs", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ jsxs3(Stack2, { children: [
+    /* @__PURE__ */ jsx5(Text3, { fw: 600, mb: "sm", children: "Select Features" }),
+    features.map((feature) => /* @__PURE__ */ jsx5(
       Checkbox,
       {
         label: feature.name,
@@ -274,11 +340,11 @@ var FeatureList = ({
 };
 
 // src/components/RoleManager.tsx
-import { useState as useState2 } from "react";
-import { Button, Input, Text as Text2, Paper as Paper2, Stack as Stack2 } from "@mantine/core";
-import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+import { useState as useState3 } from "react";
+import { Button as Button2, Input, Text as Text4, Paper as Paper2, Stack as Stack3 } from "@mantine/core";
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
 var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
-  const [newRole, setNewRole] = useState2("");
+  const [newRole, setNewRole] = useState3("");
   const { addRole } = useAddRole();
   const handleAdd = () => __async(void 0, null, function* () {
     if (!newRole) return;
@@ -290,8 +356,8 @@ var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
       console.error(e);
     }
   });
-  return /* @__PURE__ */ jsx3(Paper2, { shadow: "sm", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ jsxs2(Stack2, { children: [
-    /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsx6(Paper2, { shadow: "sm", p: "md", radius: "md", withBorder: true, children: /* @__PURE__ */ jsxs4(Stack3, { children: [
+    /* @__PURE__ */ jsx6(
       Input,
       {
         value: newRole,
@@ -299,15 +365,18 @@ var RoleManager = ({ roles, onAdd, primaryColor = "blue" }) => {
         placeholder: "Enter new role"
       }
     ),
-    /* @__PURE__ */ jsx3(Button, { color: primaryColor, onClick: handleAdd, children: "Add Role" }),
-    /* @__PURE__ */ jsx3(Text2, { fw: 600, children: "Existing Roles:" }),
-    roles.map((role) => /* @__PURE__ */ jsx3(Text2, { size: "sm", c: "dimmed", children: role }, role))
+    /* @__PURE__ */ jsx6(Button2, { color: primaryColor, onClick: handleAdd, children: "Add Role" }),
+    /* @__PURE__ */ jsx6(Text4, { fw: 600, children: "Existing Roles:" }),
+    roles.map((role) => /* @__PURE__ */ jsx6(Text4, { size: "sm", c: "dimmed", children: role }, role))
   ] }) });
 };
 export {
   FeatureList,
+  FeatureUploader,
   RBACProvider,
+  RBACSummary,
   RoleManager,
+  RoleSelector,
   featureSlice_default as featureReducer,
   featureSlice,
   setFeatures,

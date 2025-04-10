@@ -1,5 +1,5 @@
+import React$1 from 'react';
 import * as react_jsx_runtime from 'react/jsx-runtime';
-import React from 'react';
 import * as redux from 'redux';
 import * as _reduxjs_toolkit from '@reduxjs/toolkit';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -47,6 +47,25 @@ declare const useBulkAddFeatures: () => {
     addFeaturesToRole: (role: string, featureIds: string[]) => Promise<any>;
 };
 
+interface RoleSelectorProps {
+    roles: string[];
+    selected: string | null;
+    onChange: (value: string | null) => void;
+    label?: string;
+}
+declare const RoleSelector: React$1.FC<RoleSelectorProps>;
+
+interface FeatureUploaderProps {
+    onUpload: (featureIds: string[]) => void;
+}
+declare const FeatureUploader: React$1.FC<FeatureUploaderProps>;
+
+interface RBACSummaryProps {
+    role: string;
+    featureIds: string[];
+}
+declare const RBACSummary: React.FC<RBACSummaryProps>;
+
 interface RBACConfig {
     endpoints: {
         getFeatures: (roleId: string) => string;
@@ -62,7 +81,7 @@ interface RBACConfig {
 }
 
 declare const RBACProvider: ({ children, config, }: {
-    children: React.ReactNode;
+    children: React$1.ReactNode;
     config: RBACConfig;
 }) => react_jsx_runtime.JSX.Element;
 declare const useRBACContext: () => RBACConfig;
@@ -85,13 +104,13 @@ interface FeatureListProps {
     onToggle: (id: string) => void;
     primaryColor?: string;
 }
-declare const FeatureList: React.FC<FeatureListProps>;
+declare const FeatureList: React$1.FC<FeatureListProps>;
 
 interface RoleManagerProps {
     roles: string[];
     onAdd: (role: string) => void;
     primaryColor?: string;
 }
-declare const RoleManager: React.FC<RoleManagerProps>;
+declare const RoleManager: React$1.FC<RoleManagerProps>;
 
-export { FeatureList, type RBACConfig, RBACProvider, RoleManager, _default as featureReducer, featureSlice, setFeatures, useAddFeature, useAddRole, useBulkAddFeatures, useBulkRemoveFeatures, useFeatureAccess, useFetchPermissions, useFetchRoles, useRBACContext, useRemoveRole, useUploadFeatureJson };
+export { FeatureList, FeatureUploader, type RBACConfig, RBACProvider, RBACSummary, RoleManager, RoleSelector, _default as featureReducer, featureSlice, setFeatures, useAddFeature, useAddRole, useBulkAddFeatures, useBulkRemoveFeatures, useFeatureAccess, useFetchPermissions, useFetchRoles, useRBACContext, useRemoveRole, useUploadFeatureJson };
