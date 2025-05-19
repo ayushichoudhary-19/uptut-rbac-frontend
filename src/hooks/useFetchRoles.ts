@@ -9,7 +9,7 @@ interface Role {
 export const useFetchRoles = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const { endpoints, requestHeaders } = useRBACContext();
 
   const fetchRoles = useCallback(async () => {
@@ -25,7 +25,12 @@ export const useFetchRoles = () => {
       });
       if (!res.ok) throw new Error("Failed to fetch roles");
       const data = await res.json();
-      setRoles(data.roles || []);
+      setRoles(
+        (data || []).map((r: any) => ({
+          id: r.id || r._id,
+          name: r.name,
+        }))
+      );
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -37,10 +42,13 @@ export const useFetchRoles = () => {
     fetchRoles();
   }, [fetchRoles]);
 
-  return useMemo(() => ({ 
-    roles, 
-    loading, 
-    error, 
-    refetchRoles: fetchRoles 
-  }), [roles, loading, error, fetchRoles]);
+  return useMemo(
+    () => ({
+      roles,
+      loading,
+      error,
+      refetchRoles: fetchRoles,
+    }),
+    [roles, loading, error, fetchRoles]
+  );
 };

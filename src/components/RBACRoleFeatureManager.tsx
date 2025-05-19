@@ -8,7 +8,7 @@ import { useFetchFeaturesByCategory } from "../hooks/useFetchFeaturesByCategory"
 import { useAddFeaturesToRole } from "../hooks/useAddFeaturesToRole";
 import { useFetchFeaturesByRole } from "../hooks/useFetchFeaturesByRole";
 import { useFetchAllCategories } from "../hooks/useFetchAllCategories";
-import { useAddRole } from "../hooks/useAddRole"; // Add this import
+import { useAddRole } from "../hooks/useAddRole";
 import { RoleSidebar } from "./RoleSidebar";
 import { FeatureCategoryTabs } from "./FeatureCategoryTabs";
 import { FeatureToggleTable } from "./FeatureToggleTable";

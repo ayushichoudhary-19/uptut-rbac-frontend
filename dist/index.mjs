@@ -130,7 +130,12 @@ var useFetchRoles = () => {
       });
       if (!res.ok) throw new Error("Failed to fetch roles");
       const data = yield res.json();
-      setRoles(data.roles || []);
+      setRoles(
+        (data || []).map((r) => ({
+          id: r.id || r._id,
+          name: r.name
+        }))
+      );
     } catch (err) {
       setError(err.message);
     } finally {
@@ -140,12 +145,15 @@ var useFetchRoles = () => {
   useEffect2(() => {
     fetchRoles();
   }, [fetchRoles]);
-  return useMemo(() => ({
-    roles,
-    loading,
-    error,
-    refetchRoles: fetchRoles
-  }), [roles, loading, error, fetchRoles]);
+  return useMemo(
+    () => ({
+      roles,
+      loading,
+      error,
+      refetchRoles: fetchRoles
+    }),
+    [roles, loading, error, fetchRoles]
+  );
 };
 
 // src/hooks/useAddFeature.ts
@@ -330,9 +338,9 @@ var useFetchFeaturesByCategory = (category) => {
 import { useState as useState5, useEffect as useEffect4 } from "react";
 var useFetchAllCategories = () => {
   const { endpoints, requestHeaders } = useRBACContext();
-  const [categories, setCategories] = useState5([]);
   const [loading, setLoading] = useState5(false);
   const [error, setError] = useState5(null);
+  const [categories, setCategories] = useState5([]);
   useEffect4(() => {
     var _a;
     const url = (_a = endpoints.getAllCategories) == null ? void 0 : _a.call(endpoints);
@@ -389,7 +397,7 @@ var FeatureCategoryTabs = memo(({
   selected,
   onSelect
 }) => {
-  return /* @__PURE__ */ jsx5(Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ jsx5(Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ jsx5(Tabs.Tab, { value: cat, children: cat }, cat)) }) });
+  return /* @__PURE__ */ jsx5(Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ jsx5(Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ jsx5(Tabs.Tab, { value: cat._id, children: cat.name }, cat._id)) }) });
 });
 FeatureCategoryTabs.displayName = "FeatureCategoryTabs";
 

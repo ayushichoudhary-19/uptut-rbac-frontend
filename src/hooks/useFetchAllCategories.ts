@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
 import { useRBACContext } from "../context/RBACContext";
 
+export type FeatureCategory = {
+  _id: string;
+  name: string;
+};
+
 export const useFetchAllCategories = () => {
   const { endpoints, requestHeaders } = useRBACContext();
-  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<FeatureCategory[]>([]);
 
   useEffect(() => {
     const url = endpoints.getAllCategories?.();
@@ -18,8 +23,7 @@ export const useFetchAllCategories = () => {
           headers: requestHeaders?.() || {},
         });
         const data = await res.json();
-        
-        // Directly setting the response array as categories
+      
         setCategories(data || []);
       } catch (err: any) {
         setError(err.message);

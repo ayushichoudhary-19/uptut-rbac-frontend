@@ -170,7 +170,12 @@ var useFetchRoles = () => {
       });
       if (!res.ok) throw new Error("Failed to fetch roles");
       const data = yield res.json();
-      setRoles(data.roles || []);
+      setRoles(
+        (data || []).map((r) => ({
+          id: r.id || r._id,
+          name: r.name
+        }))
+      );
     } catch (err) {
       setError(err.message);
     } finally {
@@ -180,12 +185,15 @@ var useFetchRoles = () => {
   (0, import_react3.useEffect)(() => {
     fetchRoles();
   }, [fetchRoles]);
-  return (0, import_react3.useMemo)(() => ({
-    roles,
-    loading,
-    error,
-    refetchRoles: fetchRoles
-  }), [roles, loading, error, fetchRoles]);
+  return (0, import_react3.useMemo)(
+    () => ({
+      roles,
+      loading,
+      error,
+      refetchRoles: fetchRoles
+    }),
+    [roles, loading, error, fetchRoles]
+  );
 };
 
 // src/hooks/useAddFeature.ts
@@ -370,9 +378,9 @@ var useFetchFeaturesByCategory = (category) => {
 var import_react6 = require("react");
 var useFetchAllCategories = () => {
   const { endpoints, requestHeaders } = useRBACContext();
-  const [categories, setCategories] = (0, import_react6.useState)([]);
   const [loading, setLoading] = (0, import_react6.useState)(false);
   const [error, setError] = (0, import_react6.useState)(null);
+  const [categories, setCategories] = (0, import_react6.useState)([]);
   (0, import_react6.useEffect)(() => {
     var _a;
     const url = (_a = endpoints.getAllCategories) == null ? void 0 : _a.call(endpoints);
@@ -429,7 +437,7 @@ var FeatureCategoryTabs = (0, import_react7.memo)(({
   selected,
   onSelect
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.Tab, { value: cat, children: cat }, cat)) }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.Tab, { value: cat._id, children: cat.name }, cat._id)) }) });
 });
 FeatureCategoryTabs.displayName = "FeatureCategoryTabs";
 

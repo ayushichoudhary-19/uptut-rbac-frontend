@@ -13,5 +13,4 @@ export interface RBACConfig {
       uploadFeatureJson?: string;
     };
     requestHeaders?: () => HeadersInit;
-  }
-  
+}
