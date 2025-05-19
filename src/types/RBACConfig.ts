@@ -1,4 +1,5 @@
 export interface RBACConfig {
+  baseUrl?: string;
   endpoints: Partial<{
     getFeatures: (roleId: string) => string;
     getRoles: () => string;

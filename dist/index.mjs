@@ -41,24 +41,26 @@ import { useEffect, useState } from "react";
 // src/context/RBACContext.tsx
 import { createContext, useContext } from "react";
 import { jsx } from "react/jsx-runtime";
-var defaultEndpoints = {
-  getRoles: () => "/api/roles",
-  getFeatures: (roleId) => `/api/features/role/${roleId}`,
-  getAllFeatures: () => "/api/features",
-  getFeaturesByCategory: (categoryId) => `/api/features/category/${categoryId}`,
-  getAllCategories: () => "/api/feature-categories",
-  createRole: "/api/roles",
-  createFeature: "/api/features",
-  uploadFeatureJson: "/api/features/bulk",
-  addFeaturesToRole: "/api/roles/assign-features",
-  removeFeaturesFromRole: "/api/roles/remove-features",
-  removeRole: "/api/roles/delete"
-};
 var RBACContext = createContext(void 0);
 var RBACProvider = ({
   children,
   config
 }) => {
+  var _a;
+  const baseUrl = (_a = config.baseUrl) != null ? _a : "";
+  const defaultEndpoints = {
+    getRoles: () => `${baseUrl}/api/roles`,
+    getFeatures: (roleId) => `${baseUrl}/api/features/role/${roleId}`,
+    getAllFeatures: () => `${baseUrl}/api/features`,
+    getFeaturesByCategory: (categoryId) => `${baseUrl}/api/features/category/${categoryId}`,
+    getAllCategories: () => `${baseUrl}/api/feature-categories`,
+    createRole: `${baseUrl}/api/roles`,
+    createFeature: `${baseUrl}/api/features`,
+    uploadFeatureJson: `${baseUrl}/api/features/bulk`,
+    addFeaturesToRole: `${baseUrl}/api/roles/assign-features`,
+    removeFeaturesFromRole: `${baseUrl}/api/roles/remove-features`,
+    removeRole: `${baseUrl}/api/roles/delete`
+  };
   const mergedEndpoints = __spreadValues(__spreadValues({}, defaultEndpoints), config.endpoints);
   return /* @__PURE__ */ jsx(
     RBACContext.Provider,

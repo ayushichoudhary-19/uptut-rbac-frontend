@@ -6,21 +6,6 @@ interface RBACContextValue {
   requestHeaders?: () => HeadersInit;
 }
 
-const defaultEndpoints = {
-  getRoles: () => "/api/roles",
-  getFeatures: (roleId: string) => `/api/features/role/${roleId}`,
-  getAllFeatures: () => "/api/features",
-  getFeaturesByCategory: (categoryId: string) =>
-    `/api/features/category/${categoryId}`,
-  getAllCategories: () => "/api/feature-categories",
-  createRole: "/api/roles",
-  createFeature: "/api/features",
-  uploadFeatureJson: "/api/features/bulk",
-  addFeaturesToRole: "/api/roles/assign-features",
-  removeFeaturesFromRole: "/api/roles/remove-features",
-  removeRole: "/api/roles/delete",
-};
-
 const RBACContext = createContext<RBACContextValue | undefined>(undefined);
 
 export const RBACProvider = ({
@@ -30,6 +15,23 @@ export const RBACProvider = ({
   children: React.ReactNode;
   config: RBACConfig;
 }) => {
+  const baseUrl = config.baseUrl ?? "";
+
+  const defaultEndpoints = {
+    getRoles: () => `${baseUrl}/api/roles`,
+    getFeatures: (roleId: string) => `${baseUrl}/api/features/role/${roleId}`,
+    getAllFeatures: () => `${baseUrl}/api/features`,
+    getFeaturesByCategory: (categoryId: string) =>
+      `${baseUrl}/api/features/category/${categoryId}`,
+    getAllCategories: () => `${baseUrl}/api/feature-categories`,
+    createRole: `${baseUrl}/api/roles`,
+    createFeature: `${baseUrl}/api/features`,
+    uploadFeatureJson: `${baseUrl}/api/features/bulk`,
+    addFeaturesToRole: `${baseUrl}/api/roles/assign-features`,
+    removeFeaturesFromRole: `${baseUrl}/api/roles/remove-features`,
+    removeRole: `${baseUrl}/api/roles/delete`,
+  };
+
   const mergedEndpoints = { ...defaultEndpoints, ...config.endpoints };
 
   return (

@@ -74,6 +74,7 @@ declare const RBACSummary: React.FC<RBACSummaryProps>;
 declare const RBACRoleFeatureManager: React$1.MemoExoticComponent<() => react_jsx_runtime.JSX.Element>;
 
 interface RBACConfig {
+    baseUrl?: string;
     endpoints: Partial<{
         getFeatures: (roleId: string) => string;
         getRoles: () => string;
