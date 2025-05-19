@@ -74,27 +74,31 @@ declare const RBACSummary: React.FC<RBACSummaryProps>;
 declare const RBACRoleFeatureManager: React$1.MemoExoticComponent<() => react_jsx_runtime.JSX.Element>;
 
 interface RBACConfig {
-    endpoints: {
+    endpoints: Partial<{
         getFeatures: (roleId: string) => string;
         getRoles: () => string;
-        getAllFeatures?: () => string;
-        getFeaturesByCategory?: (category: string) => string;
-        getAllCategories?: () => string;
-        addFeaturesToRole?: string;
-        removeFeaturesFromRole?: string;
-        removeRole?: string;
-        createRole?: string;
-        createFeature?: string;
-        uploadFeatureJson?: string;
-    };
+        getAllFeatures: () => string;
+        getFeaturesByCategory: (categoryId: string) => string;
+        getAllCategories: () => string;
+        addFeaturesToRole: string;
+        removeFeaturesFromRole: string;
+        removeRole: string;
+        createRole: string;
+        createFeature: string;
+        uploadFeatureJson: string;
+    }>;
     requestHeaders?: () => HeadersInit;
 }
 
+interface RBACContextValue {
+    endpoints: Required<RBACConfig["endpoints"]>;
+    requestHeaders?: () => HeadersInit;
+}
 declare const RBACProvider: ({ children, config, }: {
     children: React__default.ReactNode;
     config: RBACConfig;
 }) => react_jsx_runtime.JSX.Element;
-declare const useRBACContext: () => RBACConfig;
+declare const useRBACContext: () => RBACContextValue;
 
 interface FeatureState {
     featureIds: string[];

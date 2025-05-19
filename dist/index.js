@@ -81,12 +81,35 @@ var import_react2 = require("react");
 // src/context/RBACContext.tsx
 var import_react = require("react");
 var import_jsx_runtime = require("react/jsx-runtime");
+var defaultEndpoints = {
+  getRoles: () => "/api/roles",
+  getFeatures: (roleId) => `/api/features/role/${roleId}`,
+  getAllFeatures: () => "/api/features",
+  getFeaturesByCategory: (categoryId) => `/api/features/category/${categoryId}`,
+  getAllCategories: () => "/api/feature-categories",
+  createRole: "/api/roles",
+  createFeature: "/api/features",
+  uploadFeatureJson: "/api/features/bulk",
+  addFeaturesToRole: "/api/roles/assign-features",
+  removeFeaturesFromRole: "/api/roles/remove-features",
+  removeRole: "/api/roles/delete"
+};
 var RBACContext = (0, import_react.createContext)(void 0);
 var RBACProvider = ({
   children,
   config
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RBACContext.Provider, { value: config, children });
+  const mergedEndpoints = __spreadValues(__spreadValues({}, defaultEndpoints), config.endpoints);
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+    RBACContext.Provider,
+    {
+      value: {
+        endpoints: mergedEndpoints,
+        requestHeaders: config.requestHeaders
+      },
+      children
+    }
+  );
 };
 var useRBACContext = () => {
   const context = (0, import_react.useContext)(RBACContext);
@@ -382,8 +405,7 @@ var useFetchAllCategories = () => {
   const [error, setError] = (0, import_react6.useState)(null);
   const [categories, setCategories] = (0, import_react6.useState)([]);
   (0, import_react6.useEffect)(() => {
-    var _a;
-    const url = (_a = endpoints.getAllCategories) == null ? void 0 : _a.call(endpoints);
+    const url = endpoints.getAllCategories();
     if (!url) return;
     const fetchCategories = () => __async(void 0, null, function* () {
       setLoading(true);
@@ -392,7 +414,11 @@ var useFetchAllCategories = () => {
           headers: (requestHeaders == null ? void 0 : requestHeaders()) || {}
         });
         const data = yield res.json();
-        setCategories(data || []);
+        const normalized = (data || []).map((c) => ({
+          id: c.id || c._id,
+          name: c.name
+        }));
+        setCategories(normalized);
       } catch (err) {
         setError(err.message);
         console.error("Error fetching categories:", err);
@@ -437,7 +463,7 @@ var FeatureCategoryTabs = (0, import_react7.memo)(({
   selected,
   onSelect
 }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.Tab, { value: cat._id, children: cat.name }, cat._id)) }) });
+  return /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs, { value: selected, onChange: onSelect, variant: "outline", children: /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.List, { children: categories.map((cat) => /* @__PURE__ */ (0, import_jsx_runtime5.jsx)(import_core4.Tabs.Tab, { value: cat.id, children: cat.name }, cat.id)) }) });
 });
 FeatureCategoryTabs.displayName = "FeatureCategoryTabs";
 
@@ -552,6 +578,11 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
   const memoizedCategoryFeatures = (0, import_react10.useMemo)(() => categoryFeatures, [categoryFeatures]);
   const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react10.useState)([]);
   const [isCreatingRole, setIsCreatingRole] = (0, import_react10.useState)(false);
+  (0, import_react10.useEffect)(() => {
+    if (!selectedCategory && categories.length > 0) {
+      setSelectedCategory(categories[0].id);
+    }
+  }, [categories, selectedCategory]);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
   const memoizedRoleFeatureIds = (0, import_react10.useMemo)(() => roleFeatures.map((f) => f.id), [roleFeatures]);
   (0, import_react10.useEffect)(() => {

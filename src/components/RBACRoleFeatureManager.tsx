@@ -33,6 +33,13 @@ export const RBACRoleFeatureManager = memo(() => {
   const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]);
   const [isCreatingRole, setIsCreatingRole] = useState(false);
 
+  useEffect(() => {
+    if (!selectedCategory && categories.length > 0) {
+      setSelectedCategory(categories[0].id);
+    }
+  }, [categories, selectedCategory]);
+
+  
   // Extract IDs from role features
   const roleFeatureIds = roleFeatures.map((f: any) => f.id);
 

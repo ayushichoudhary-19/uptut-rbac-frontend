@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRBACContext } from "../context/RBACContext";
 
 export type FeatureCategory = {
-  _id: string;
+  id: string;
   name: string;
 };
 
@@ -13,7 +13,7 @@ export const useFetchAllCategories = () => {
   const [categories, setCategories] = useState<FeatureCategory[]>([]);
 
   useEffect(() => {
-    const url = endpoints.getAllCategories?.();
+    const url = endpoints.getAllCategories();
     if (!url) return;
 
     const fetchCategories = async () => {
@@ -23,8 +23,13 @@ export const useFetchAllCategories = () => {
           headers: requestHeaders?.() || {},
         });
         const data = await res.json();
-      
-        setCategories(data || []);
+
+        const normalized = (data || []).map((c: any) => ({
+          id: c.id || c._id,
+          name: c.name,
+        }));
+
+        setCategories(normalized);
       } catch (err: any) {
         setError(err.message);
         console.error("Error fetching categories:", err);

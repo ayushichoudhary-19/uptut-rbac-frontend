@@ -1,7 +1,27 @@
 import React, { createContext, useContext } from "react";
-import type { RBACConfig } from "../types/RBACConfig"
+import { RBACConfig } from "../types/RBACConfig";
 
-const RBACContext = createContext<RBACConfig | undefined>(undefined);
+interface RBACContextValue {
+  endpoints: Required<RBACConfig["endpoints"]>;
+  requestHeaders?: () => HeadersInit;
+}
+
+const defaultEndpoints = {
+  getRoles: () => "/api/roles",
+  getFeatures: (roleId: string) => `/api/features/role/${roleId}`,
+  getAllFeatures: () => "/api/features",
+  getFeaturesByCategory: (categoryId: string) =>
+    `/api/features/category/${categoryId}`,
+  getAllCategories: () => "/api/feature-categories",
+  createRole: "/api/roles",
+  createFeature: "/api/features",
+  uploadFeatureJson: "/api/features/bulk",
+  addFeaturesToRole: "/api/roles/assign-features",
+  removeFeaturesFromRole: "/api/roles/remove-features",
+  removeRole: "/api/roles/delete",
+};
+
+const RBACContext = createContext<RBACContextValue | undefined>(undefined);
 
 export const RBACProvider = ({
   children,
@@ -10,7 +30,18 @@ export const RBACProvider = ({
   children: React.ReactNode;
   config: RBACConfig;
 }) => {
-  return <RBACContext.Provider value={config}>{children}</RBACContext.Provider>;
+  const mergedEndpoints = { ...defaultEndpoints, ...config.endpoints };
+
+  return (
+    <RBACContext.Provider
+      value={{
+        endpoints: mergedEndpoints,
+        requestHeaders: config.requestHeaders,
+      }}
+    >
+      {children}
+    </RBACContext.Provider>
+  );
 };
 
 export const useRBACContext = () => {
