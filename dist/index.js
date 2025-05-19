@@ -575,7 +575,10 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
   const dispatch = (0, import_react_redux2.useDispatch)();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
-  const memoizedCategoryFeatures = (0, import_react10.useMemo)(() => categoryFeatures, [categoryFeatures]);
+  const memoizedCategoryFeatures = (0, import_react10.useMemo)(
+    () => categoryFeatures,
+    [categoryFeatures]
+  );
   const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react10.useState)([]);
   const [isCreatingRole, setIsCreatingRole] = (0, import_react10.useState)(false);
   (0, import_react10.useEffect)(() => {
@@ -584,7 +587,10 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
     }
   }, [categories, selectedCategory]);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
-  const memoizedRoleFeatureIds = (0, import_react10.useMemo)(() => roleFeatures.map((f) => f.id), [roleFeatures]);
+  const memoizedRoleFeatureIds = (0, import_react10.useMemo)(
+    () => roleFeatures.map((f) => f.id),
+    [roleFeatures]
+  );
   (0, import_react10.useEffect)(() => {
     if (selectedRole) {
       setSelectedFeatureIds(memoizedRoleFeatureIds);
@@ -606,16 +612,19 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
       console.error("Failed to save features:", error);
     }
   }), [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
-  const handleCreateRole = (0, import_react10.useCallback)((roleId, roleName) => __async(void 0, null, function* () {
-    try {
-      yield addRole({ id: roleId, name: roleName });
-      setIsCreatingRole(false);
-      yield refetchRoles();
-      setSelectedRole(roleId);
-    } catch (error) {
-      console.error("Failed to create role:", error);
-    }
-  }), [addRole, refetchRoles]);
+  const handleCreateRole = (0, import_react10.useCallback)(
+    (roleId, roleName) => __async(void 0, null, function* () {
+      try {
+        yield addRole({ id: roleId, name: roleName });
+        setIsCreatingRole(false);
+        yield refetchRoles();
+        setSelectedRole(roleId);
+      } catch (error) {
+        console.error("Failed to create role:", error);
+      }
+    }),
+    [addRole, refetchRoles]
+  );
   const handleCategorySelect = (0, import_react10.useCallback)((category) => {
     setSelectedCategory(category);
   }, []);
@@ -641,7 +650,7 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
         onAdd: () => setIsCreatingRole(true)
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(import_core7.Stack, { className: "flex-1", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(import_core7.Stack, { className: "flex-1", children: selectedCategory && /* @__PURE__ */ (0, import_jsx_runtime8.jsxs)(import_jsx_runtime8.Fragment, { children: [
       /* @__PURE__ */ (0, import_jsx_runtime8.jsx)(
         FeatureCategoryTabs,
         {
@@ -659,7 +668,7 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
           onSave: handleSave
         }
       )
-    ] })
+    ] }) })
   ] });
 });
 RBACRoleFeatureManager.displayName = "RBACRoleFeatureManager";

@@ -24,11 +24,15 @@ export const RBACRoleFeatureManager = memo(() => {
   const { addFeatures } = useAddFeaturesToRole();
   const dispatch = useDispatch();
 
-  const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
+  const { features: categoryFeatures = [] } =
+    useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
 
   // Add memoization for categoryFeatures
-  const memoizedCategoryFeatures = useMemo(() => categoryFeatures, [categoryFeatures]);
+  const memoizedCategoryFeatures = useMemo(
+    () => categoryFeatures,
+    [categoryFeatures]
+  );
 
   const [selectedFeatureIds, setSelectedFeatureIds] = useState<string[]>([]);
   const [isCreatingRole, setIsCreatingRole] = useState(false);
@@ -39,12 +43,14 @@ export const RBACRoleFeatureManager = memo(() => {
     }
   }, [categories, selectedCategory]);
 
-  
   // Extract IDs from role features
   const roleFeatureIds = roleFeatures.map((f: any) => f.id);
 
   // Fix 1: Add proper dependency array and memoize roleFeatureIds
-  const memoizedRoleFeatureIds = useMemo(() => roleFeatures.map((f: any) => f.id), [roleFeatures]);
+  const memoizedRoleFeatureIds = useMemo(
+    () => roleFeatures.map((f: any) => f.id),
+    [roleFeatures]
+  );
 
   // Fix 2: Update useEffect to use memoized value and proper dependencies
   useEffect(() => {
@@ -57,9 +63,9 @@ export const RBACRoleFeatureManager = memo(() => {
   const toggleFeature = useCallback((featureId: string) => {
     setSelectedFeatureIds((prev) => {
       const isSelected = prev.includes(featureId);
-      console.log('Toggling feature:', featureId, 'Current state:', isSelected);
-      return isSelected 
-        ? prev.filter(id => id !== featureId)
+      console.log("Toggling feature:", featureId, "Current state:", isSelected);
+      return isSelected
+        ? prev.filter((id) => id !== featureId)
         : [...prev, featureId];
     });
   }, []);
@@ -70,20 +76,23 @@ export const RBACRoleFeatureManager = memo(() => {
       await addFeatures(selectedRole, selectedFeatureIds);
       dispatch(setFeatures(selectedFeatureIds));
     } catch (error) {
-      console.error('Failed to save features:', error);
+      console.error("Failed to save features:", error);
     }
   }, [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
 
-  const handleCreateRole = useCallback(async (roleId: string, roleName: string) => {
-    try {
-      await addRole({ id: roleId, name: roleName });
-      setIsCreatingRole(false);
-      await refetchRoles();
-      setSelectedRole(roleId);
-    } catch (error) {
-      console.error('Failed to create role:', error);
-    }
-  }, [addRole, refetchRoles]);
+  const handleCreateRole = useCallback(
+    async (roleId: string, roleName: string) => {
+      try {
+        await addRole({ id: roleId, name: roleName });
+        setIsCreatingRole(false);
+        await refetchRoles();
+        setSelectedRole(roleId);
+      } catch (error) {
+        console.error("Failed to create role:", error);
+      }
+    },
+    [addRole, refetchRoles]
+  );
 
   const handleCategorySelect = useCallback((category: string) => {
     setSelectedCategory(category);
@@ -111,20 +120,24 @@ export const RBACRoleFeatureManager = memo(() => {
         onAdd={() => setIsCreatingRole(true)}
       />
       <Stack className="flex-1">
-        <FeatureCategoryTabs
-          categories={categories}
-          selected={selectedCategory}
-          onSelect={handleCategorySelect}
-        />
-        <FeatureToggleTable
-          features={memoizedCategoryFeatures}
-          selectedIds={selectedFeatureIds}
-          onToggle={toggleFeature}
-          onSave={handleSave}
-        />
+        {selectedCategory && (
+          <>
+            <FeatureCategoryTabs
+              categories={categories}
+              selected={selectedCategory}
+              onSelect={handleCategorySelect}
+            />
+            <FeatureToggleTable
+              features={memoizedCategoryFeatures}
+              selectedIds={selectedFeatureIds}
+              onToggle={toggleFeature}
+              onSave={handleSave}
+            />
+          </>
+        )}
       </Stack>
     </Paper>
   );
 });
 
-RBACRoleFeatureManager.displayName = 'RBACRoleFeatureManager';
+RBACRoleFeatureManager.displayName = "RBACRoleFeatureManager";
