@@ -1,8 +1,10 @@
 import React, { createContext, useContext } from "react";
-import { RBACConfig } from "../types/RBACConfig";
+import type { RBACConfig } from "../types/RBACConfig";
+
+type FullEndpointSet = Required<NonNullable<RBACConfig["endpoints"]>>;
 
 interface RBACContextValue {
-  endpoints: Required<RBACConfig["endpoints"]>;
+  endpoints: FullEndpointSet;
   requestHeaders?: () => HeadersInit;
 }
 

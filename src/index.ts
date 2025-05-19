@@ -19,6 +19,7 @@ export * from "./context/RBACContext";
 
 // TYPES
 export type { RBACConfig } from "./types/RBACConfig";
+export * from "./types/RBACConfig";
 
 // REDUX
 export * from "./store/featureSlice";
