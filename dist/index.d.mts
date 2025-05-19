@@ -91,8 +91,9 @@ interface RBACConfig {
     requestHeaders?: () => HeadersInit;
 }
 
+type FullEndpointSet = Required<NonNullable<RBACConfig["endpoints"]>>;
 interface RBACContextValue {
-    endpoints: Required<RBACConfig["endpoints"]>;
+    endpoints: FullEndpointSet;
     requestHeaders?: () => HeadersInit;
 }
 declare const RBACProvider: ({ children, config, }: {
