@@ -50,16 +50,16 @@ var RBACProvider = ({
   const baseUrl = (_a = config.baseUrl) != null ? _a : "";
   const defaultEndpoints = {
     getRoles: () => `${baseUrl}/api/roles`,
-    getFeatures: (roleId) => `${baseUrl}/api/features/role/${roleId}`,
+    getFeatures: (roleId) => `${baseUrl}/api/roles/${roleId}/features`,
     getAllFeatures: () => `${baseUrl}/api/features`,
     getFeaturesByCategory: (categoryId) => `${baseUrl}/api/features/category/${categoryId}`,
     getAllCategories: () => `${baseUrl}/api/feature-categories`,
-    createRole: `${baseUrl}/api/roles`,
-    createFeature: `${baseUrl}/api/features`,
-    uploadFeatureJson: `${baseUrl}/api/features/bulk`,
-    addFeaturesToRole: `${baseUrl}/api/roles/assign-features`,
-    removeFeaturesFromRole: `${baseUrl}/api/roles/remove-features`,
-    removeRole: `${baseUrl}/api/roles/delete`
+    createRole: () => `${baseUrl}/api/roles`,
+    createFeature: () => `${baseUrl}/api/features`,
+    uploadFeatureJson: () => `${baseUrl}/api/features/bulk`,
+    addFeaturesToRole: (roleId) => `${baseUrl}/api/roles/${roleId}/features`,
+    removeFeaturesFromRole: () => `${baseUrl}/api/roles/remove-features`,
+    removeRole: () => `${baseUrl}/api/roles/delete`
   };
   const mergedEndpoints = __spreadValues(__spreadValues({}, defaultEndpoints), config.endpoints);
   return /* @__PURE__ */ jsx(
@@ -445,7 +445,7 @@ var FeatureToggleTable = memo2(({
         /* @__PURE__ */ jsx6("th", { children: "Select" }),
         /* @__PURE__ */ jsx6("th", { children: "Feature Name" })
       ] }) }),
-      /* @__PURE__ */ jsx6("tbody", { children: features.map((feature) => /* @__PURE__ */ jsxs4("tr", { children: [
+      /* @__PURE__ */ jsx6("tbody", { children: features.map((feature, idx) => /* @__PURE__ */ jsxs4("tr", { children: [
         /* @__PURE__ */ jsx6("td", { children: /* @__PURE__ */ jsx6(
           Checkbox,
           {
@@ -454,7 +454,7 @@ var FeatureToggleTable = memo2(({
           }
         ) }),
         /* @__PURE__ */ jsx6("td", { children: feature.name })
-      ] }, feature.id)) })
+      ] }, idx)) })
     ] }),
     /* @__PURE__ */ jsx6(Button3, { mt: "md", onClick: onSave, children: "Save Changes" })
   ] });
@@ -528,6 +528,7 @@ var RoleManagement = ({ onRoleCreate, onCancel }) => {
 // src/components/RBACRoleFeatureManager.tsx
 import { Fragment, jsx as jsx8, jsxs as jsxs6 } from "react/jsx-runtime";
 var RBACRoleFeatureManager = memo3(() => {
+  const getNormalizedId = (item) => (item == null ? void 0 : item.id) || (item == null ? void 0 : item._id);
   const { roles, refetchRoles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState7("");
   const [selectedCategory, setSelectedCategory] = useState7("");
@@ -537,6 +538,17 @@ var RBACRoleFeatureManager = memo3(() => {
   const dispatch = useDispatch();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
+  const roleFeaturesByCategoryIds = useMemo3(() => {
+    return roleFeatures.filter((feature) => {
+      const featureCategoryId = feature.categoryId || feature.category;
+      return featureCategoryId === selectedCategory;
+    }).map((feature) => getNormalizedId(feature));
+  }, [roleFeatures, selectedCategory]);
+  useEffect5(() => {
+    if (selectedRole && selectedCategory) {
+      setSelectedFeatureIds(roleFeaturesByCategoryIds);
+    }
+  }, [selectedRole, selectedCategory, roleFeaturesByCategoryIds]);
   const memoizedCategoryFeatures = useMemo3(
     () => categoryFeatures,
     [categoryFeatures]
@@ -544,8 +556,13 @@ var RBACRoleFeatureManager = memo3(() => {
   const [selectedFeatureIds, setSelectedFeatureIds] = useState7([]);
   const [isCreatingRole, setIsCreatingRole] = useState7(false);
   useEffect5(() => {
-    if (!selectedCategory && categories.length > 0) {
-      setSelectedCategory(categories[0].id);
+    if (roles.length > 0 && !selectedRole) {
+      setSelectedRole(getNormalizedId(roles[0]));
+    }
+  }, [roles, selectedRole]);
+  useEffect5(() => {
+    if (categories.length > 0 && !selectedCategory) {
+      setSelectedCategory(getNormalizedId(categories[0]));
     }
   }, [categories, selectedCategory]);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
@@ -568,12 +585,21 @@ var RBACRoleFeatureManager = memo3(() => {
   const handleSave = useCallback3(() => __async(void 0, null, function* () {
     if (!selectedRole) return;
     try {
-      yield addFeatures(selectedRole, selectedFeatureIds);
-      dispatch(setFeatures(selectedFeatureIds));
+      const currentRoleFeatureIds = roleFeatureIds;
+      const featuresFromOtherCategories = roleFeatures.filter((feature) => {
+        const featureCategoryId = feature.categoryId || feature.category;
+        return featureCategoryId !== selectedCategory;
+      }).map((feature) => getNormalizedId(feature));
+      const updatedFeatureIds = [
+        ...featuresFromOtherCategories,
+        ...selectedFeatureIds
+      ];
+      yield addFeatures(selectedRole, updatedFeatureIds);
+      dispatch(setFeatures(updatedFeatureIds));
     } catch (error) {
       console.error("Failed to save features:", error);
     }
-  }), [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
+  }), [selectedRole, selectedCategory, selectedFeatureIds, roleFeatures, roleFeatureIds, addFeatures, dispatch]);
   const handleCreateRole = useCallback3(
     (roleId, roleName) => __async(void 0, null, function* () {
       try {

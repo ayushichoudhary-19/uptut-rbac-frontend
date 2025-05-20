@@ -90,16 +90,16 @@ var RBACProvider = ({
   const baseUrl = (_a = config.baseUrl) != null ? _a : "";
   const defaultEndpoints = {
     getRoles: () => `${baseUrl}/api/roles`,
-    getFeatures: (roleId) => `${baseUrl}/api/features/role/${roleId}`,
+    getFeatures: (roleId) => `${baseUrl}/api/roles/${roleId}/features`,
     getAllFeatures: () => `${baseUrl}/api/features`,
     getFeaturesByCategory: (categoryId) => `${baseUrl}/api/features/category/${categoryId}`,
     getAllCategories: () => `${baseUrl}/api/feature-categories`,
-    createRole: `${baseUrl}/api/roles`,
-    createFeature: `${baseUrl}/api/features`,
-    uploadFeatureJson: `${baseUrl}/api/features/bulk`,
-    addFeaturesToRole: `${baseUrl}/api/roles/assign-features`,
-    removeFeaturesFromRole: `${baseUrl}/api/roles/remove-features`,
-    removeRole: `${baseUrl}/api/roles/delete`
+    createRole: () => `${baseUrl}/api/roles`,
+    createFeature: () => `${baseUrl}/api/features`,
+    uploadFeatureJson: () => `${baseUrl}/api/features/bulk`,
+    addFeaturesToRole: (roleId) => `${baseUrl}/api/roles/${roleId}/features`,
+    removeFeaturesFromRole: () => `${baseUrl}/api/roles/remove-features`,
+    removeRole: () => `${baseUrl}/api/roles/delete`
   };
   const mergedEndpoints = __spreadValues(__spreadValues({}, defaultEndpoints), config.endpoints);
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -485,7 +485,7 @@ var FeatureToggleTable = (0, import_react8.memo)(({
         /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("th", { children: "Select" }),
         /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("th", { children: "Feature Name" })
       ] }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("tbody", { children: features.map((feature) => /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("tr", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("tbody", { children: features.map((feature, idx) => /* @__PURE__ */ (0, import_jsx_runtime6.jsxs)("tr", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("td", { children: /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(
           import_core5.Checkbox,
           {
@@ -494,7 +494,7 @@ var FeatureToggleTable = (0, import_react8.memo)(({
           }
         ) }),
         /* @__PURE__ */ (0, import_jsx_runtime6.jsx)("td", { children: feature.name })
-      ] }, feature.id)) })
+      ] }, idx)) })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime6.jsx)(import_core5.Button, { mt: "md", onClick: onSave, children: "Save Changes" })
   ] });
@@ -568,6 +568,7 @@ var RoleManagement = ({ onRoleCreate, onCancel }) => {
 // src/components/RBACRoleFeatureManager.tsx
 var import_jsx_runtime8 = require("react/jsx-runtime");
 var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
+  const getNormalizedId = (item) => (item == null ? void 0 : item.id) || (item == null ? void 0 : item._id);
   const { roles, refetchRoles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = (0, import_react10.useState)("");
   const [selectedCategory, setSelectedCategory] = (0, import_react10.useState)("");
@@ -577,6 +578,17 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
   const dispatch = (0, import_react_redux2.useDispatch)();
   const { features: categoryFeatures = [] } = useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
+  const roleFeaturesByCategoryIds = (0, import_react10.useMemo)(() => {
+    return roleFeatures.filter((feature) => {
+      const featureCategoryId = feature.categoryId || feature.category;
+      return featureCategoryId === selectedCategory;
+    }).map((feature) => getNormalizedId(feature));
+  }, [roleFeatures, selectedCategory]);
+  (0, import_react10.useEffect)(() => {
+    if (selectedRole && selectedCategory) {
+      setSelectedFeatureIds(roleFeaturesByCategoryIds);
+    }
+  }, [selectedRole, selectedCategory, roleFeaturesByCategoryIds]);
   const memoizedCategoryFeatures = (0, import_react10.useMemo)(
     () => categoryFeatures,
     [categoryFeatures]
@@ -584,8 +596,13 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
   const [selectedFeatureIds, setSelectedFeatureIds] = (0, import_react10.useState)([]);
   const [isCreatingRole, setIsCreatingRole] = (0, import_react10.useState)(false);
   (0, import_react10.useEffect)(() => {
-    if (!selectedCategory && categories.length > 0) {
-      setSelectedCategory(categories[0].id);
+    if (roles.length > 0 && !selectedRole) {
+      setSelectedRole(getNormalizedId(roles[0]));
+    }
+  }, [roles, selectedRole]);
+  (0, import_react10.useEffect)(() => {
+    if (categories.length > 0 && !selectedCategory) {
+      setSelectedCategory(getNormalizedId(categories[0]));
     }
   }, [categories, selectedCategory]);
   const roleFeatureIds = roleFeatures.map((f) => f.id);
@@ -608,12 +625,21 @@ var RBACRoleFeatureManager = (0, import_react10.memo)(() => {
   const handleSave = (0, import_react10.useCallback)(() => __async(void 0, null, function* () {
     if (!selectedRole) return;
     try {
-      yield addFeatures(selectedRole, selectedFeatureIds);
-      dispatch(setFeatures(selectedFeatureIds));
+      const currentRoleFeatureIds = roleFeatureIds;
+      const featuresFromOtherCategories = roleFeatures.filter((feature) => {
+        const featureCategoryId = feature.categoryId || feature.category;
+        return featureCategoryId !== selectedCategory;
+      }).map((feature) => getNormalizedId(feature));
+      const updatedFeatureIds = [
+        ...featuresFromOtherCategories,
+        ...selectedFeatureIds
+      ];
+      yield addFeatures(selectedRole, updatedFeatureIds);
+      dispatch(setFeatures(updatedFeatureIds));
     } catch (error) {
       console.error("Failed to save features:", error);
     }
-  }), [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
+  }), [selectedRole, selectedCategory, selectedFeatureIds, roleFeatures, roleFeatureIds, addFeatures, dispatch]);
   const handleCreateRole = (0, import_react10.useCallback)(
     (roleId, roleName) => __async(void 0, null, function* () {
       try {

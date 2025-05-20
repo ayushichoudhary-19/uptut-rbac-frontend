@@ -22,8 +22,8 @@ export const FeatureToggleTable = memo(({
           </tr>
         </thead>
         <tbody>
-          {features.map((feature) => (
-            <tr key={feature.id}>
+          {features.map((feature,idx) => (
+            <tr key={idx}>
               <td>
                 <Checkbox
                   checked={selectedIds.includes(feature.id)}

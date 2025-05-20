@@ -16,6 +16,7 @@ import { setFeatures } from "../store/featureSlice";
 import { RoleManagement } from "./RoleManagement";
 
 export const RBACRoleFeatureManager = memo(() => {
+  const getNormalizedId = (item) => item?.id || item?._id;
   const { roles, refetchRoles } = useFetchRoles();
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -28,6 +29,21 @@ export const RBACRoleFeatureManager = memo(() => {
     useFetchFeaturesByCategory(selectedCategory);
   const { features: roleFeatures = [] } = useFetchFeaturesByRole(selectedRole);
 
+  const roleFeaturesByCategoryIds = useMemo(() => {
+    return roleFeatures
+      .filter(feature => {
+        const featureCategoryId = feature.categoryId || feature.category;
+        return featureCategoryId === selectedCategory;
+      })
+      .map(feature => getNormalizedId(feature));
+  }, [roleFeatures, selectedCategory]);
+
+  useEffect(() => {
+    if (selectedRole && selectedCategory) {
+      setSelectedFeatureIds(roleFeaturesByCategoryIds);
+    }
+  }, [selectedRole, selectedCategory, roleFeaturesByCategoryIds]);
+  
   // Add memoization for categoryFeatures
   const memoizedCategoryFeatures = useMemo(
     () => categoryFeatures,
@@ -38,8 +54,14 @@ export const RBACRoleFeatureManager = memo(() => {
   const [isCreatingRole, setIsCreatingRole] = useState(false);
 
   useEffect(() => {
-    if (!selectedCategory && categories.length > 0) {
-      setSelectedCategory(categories[0].id);
+    if (roles.length > 0 && !selectedRole) {
+      setSelectedRole(getNormalizedId(roles[0]));
+    }
+  }, [roles, selectedRole]);
+  
+  useEffect(() => {
+    if (categories.length > 0 && !selectedCategory) {
+      setSelectedCategory(getNormalizedId(categories[0]));
     }
   }, [categories, selectedCategory]);
 
@@ -72,14 +94,32 @@ export const RBACRoleFeatureManager = memo(() => {
 
   const handleSave = useCallback(async () => {
     if (!selectedRole) return;
+    
     try {
-      await addFeatures(selectedRole, selectedFeatureIds);
-      dispatch(setFeatures(selectedFeatureIds));
+      // 1. Get all the role's current features
+      const currentRoleFeatureIds = roleFeatureIds;
+      
+      // 2. Filter out features from the current category
+      const featuresFromOtherCategories = roleFeatures
+        .filter(feature => {
+          const featureCategoryId = feature.categoryId || feature.category;
+          return featureCategoryId !== selectedCategory;
+        })
+        .map(feature => getNormalizedId(feature));
+      
+      // 3. Combine with the newly selected features from current category
+      const updatedFeatureIds = [
+        ...featuresFromOtherCategories,
+        ...selectedFeatureIds
+      ];
+      
+      // 4. Save to backend
+      await addFeatures(selectedRole, updatedFeatureIds);
+      dispatch(setFeatures(updatedFeatureIds));
     } catch (error) {
       console.error("Failed to save features:", error);
     }
-  }, [selectedRole, selectedFeatureIds, addFeatures, dispatch]);
-
+  }, [selectedRole, selectedCategory, selectedFeatureIds, roleFeatures, roleFeatureIds, addFeatures, dispatch]);
   const handleCreateRole = useCallback(
     async (roleId: string, roleName: string) => {
       try {
